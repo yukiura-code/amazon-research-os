@@ -1,0 +1,310 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Amazon Research OS｜ナレッジポータル</title>
+  <style>
+    :root {
+      --primary: #1a2b4a;
+      --accent:  #e8630a;
+      --accent2: #2e7dd1;
+      --bg:      #f4f6f9;
+      --card:    #ffffff;
+      --text:    #1e2a3a;
+      --muted:   #6b7a8d;
+      --border:  #dde2ea;
+      --green:   #1a7f4b;
+      --red:     #c0392b;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: 'Helvetica Neue', 'Noto Sans JP', Arial, sans-serif;
+           background: var(--bg); color: var(--text); font-size: 15px; line-height: 1.6; }
+
+    /* ── Header ── */
+    .header { background: var(--primary); color: #fff; padding: 32px 48px 28px; }
+    .header-inner { max-width: 1200px; margin: 0 auto; display: flex; justify-content: space-between; align-items: flex-end; flex-wrap: wrap; gap: 12px; }
+    .header h1 { font-size: 22px; font-weight: 700; letter-spacing: 0.03em; }
+    .header .brand { font-size: 12px; opacity: .6; margin-bottom: 6px; letter-spacing: .1em; }
+    .header-right { text-align: right; font-size: 12px; opacity: .65; line-height: 1.9; }
+
+    /* ── Stats bar ── */
+    .stats-bar { background: #243558; }
+    .stats-inner { max-width: 1200px; margin: 0 auto; padding: 16px 48px;
+                   display: flex; gap: 40px; flex-wrap: wrap; }
+    .stat { display: flex; flex-direction: column; }
+    .stat-val { font-size: 20px; font-weight: 700; color: #fff; }
+    .stat-label { font-size: 11px; color: rgba(255,255,255,.5); letter-spacing: .05em; margin-top: 2px; }
+
+    /* ── Toolbar ── */
+    .toolbar { background: #fff; border-bottom: 1px solid var(--border); padding: 14px 48px; }
+    .toolbar-inner { max-width: 1200px; margin: 0 auto; display: flex; align-items: center; gap: 16px; flex-wrap: wrap; }
+    .search-wrap { position: relative; flex: 1; min-width: 200px; }
+    .search-wrap input {
+      width: 100%; padding: 9px 14px 9px 36px;
+      border: 1px solid var(--border); border-radius: 8px;
+      font-size: 13.5px; background: var(--bg); outline: none; }
+    .search-wrap input:focus { border-color: var(--accent2); background: #fff; }
+    .search-icon { position: absolute; left: 11px; top: 50%; transform: translateY(-50%);
+                   color: var(--muted); font-size: 14px; }
+    .filter-group { display: flex; gap: 8px; flex-wrap: wrap; }
+    .filter-btn {
+      padding: 7px 14px; border-radius: 20px; border: 1px solid var(--border);
+      background: #fff; font-size: 12.5px; cursor: pointer; color: var(--muted);
+      transition: all .15s; }
+    .filter-btn:hover { border-color: var(--accent2); color: var(--accent2); }
+    .filter-btn.active { background: var(--primary); color: #fff; border-color: var(--primary); }
+    .count-badge { margin-left: auto; font-size: 12px; color: var(--muted); }
+
+    /* ── Main ── */
+    .main { max-width: 1200px; margin: 0 auto; padding: 32px 48px 80px; }
+
+    /* ── Report Grid ── */
+    .report-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(340px, 1fr)); gap: 20px; }
+
+    /* ── Report Card ── */
+    .report-card {
+      background: var(--card); border-radius: 12px;
+      box-shadow: 0 1px 4px rgba(0,0,0,.07); overflow: hidden;
+      display: flex; flex-direction: column;
+      transition: transform .15s, box-shadow .15s; cursor: default; }
+    .report-card:hover { transform: translateY(-2px); box-shadow: 0 4px 16px rgba(0,0,0,.1); }
+    .card-top { padding: 20px 20px 14px; flex: 1; }
+    .card-meta { display: flex; align-items: center; gap: 8px; margin-bottom: 10px; flex-wrap: wrap; }
+    .tag-platform {
+      padding: 2px 9px; border-radius: 4px; font-size: 11px; font-weight: 700;
+      letter-spacing: .04em; }
+    .tag-amazon  { background: #fff3e6; color: #c45c00; }
+    .tag-rakuten { background: #fff0f0; color: #a00000; }
+    .tag-yahoo   { background: #e6f0ff; color: #0057b8; }
+    .card-date { font-size: 11px; color: var(--muted); margin-left: auto; }
+    .card-title { font-size: 16px; font-weight: 700; color: var(--primary); margin-bottom: 4px; }
+    .card-period { font-size: 12px; color: var(--muted); margin-bottom: 14px; }
+    .card-summary { font-size: 12.5px; color: #4a5568; line-height: 1.65; margin-bottom: 14px; }
+
+    /* KPI row */
+    .kpi-row { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 14px; }
+    .kpi-cell { background: var(--bg); border-radius: 8px; padding: 9px 12px; }
+    .kpi-cell .kv  { font-size: 16px; font-weight: 700; color: var(--primary); }
+    .kpi-cell .kl  { font-size: 11px; color: var(--muted); margin-top: 2px; }
+    .kpi-cell.good .kv { color: var(--green); }
+    .kpi-cell.warn .kv { color: #d4860a; }
+
+    /* Tags */
+    .card-tags { display: flex; gap: 6px; flex-wrap: wrap; }
+    .card-tag { padding: 2px 8px; border-radius: 4px; background: #eef2f8; color: var(--muted);
+                font-size: 11px; }
+
+    /* Card bottom */
+    .card-bottom {
+      border-top: 1px solid var(--border); padding: 12px 20px;
+      display: flex; justify-content: space-between; align-items: center; }
+    .card-asin { font-size: 11px; color: var(--muted); font-family: monospace; }
+    .card-link {
+      display: inline-flex; align-items: center; gap: 5px;
+      padding: 6px 14px; border-radius: 6px;
+      background: var(--primary); color: #fff;
+      font-size: 12px; font-weight: 600; text-decoration: none;
+      transition: background .15s; }
+    .card-link:hover { background: var(--accent); }
+
+    /* Empty state */
+    .empty { text-align: center; padding: 80px 20px; color: var(--muted); }
+    .empty .icon { font-size: 40px; margin-bottom: 16px; }
+    .empty p { font-size: 14px; }
+
+    /* Section heading */
+    .section-heading { font-size: 13px; font-weight: 700; color: var(--muted);
+                       letter-spacing: .06em; text-transform: uppercase;
+                       margin-bottom: 16px; padding-bottom: 8px;
+                       border-bottom: 1px solid var(--border); }
+
+    @media(max-width:640px){
+      .header, .stats-inner, .toolbar, .main { padding-left: 20px; padding-right: 20px; }
+      .report-grid { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+<div class="header">
+  <div class="header-inner">
+    <div>
+      <div class="brand">BabyGoo / fungoo｜株式会社ASAGIRI</div>
+      <h1>Amazon Research OS｜ナレッジポータル</h1>
+    </div>
+    <div class="header-right">
+      <div>社内限定ドキュメント</div>
+      <div id="today"></div>
+    </div>
+  </div>
+</div>
+
+<div class="stats-bar">
+  <div class="stats-inner">
+    <div class="stat"><span class="stat-val" id="st-total">0</span><span class="stat-label">レポート数</span></div>
+    <div class="stat"><span class="stat-val" id="st-products">0</span><span class="stat-label">対象商品数</span></div>
+    <div class="stat"><span class="stat-val" id="st-months">0</span><span class="stat-label">カバー月数</span></div>
+    <div class="stat"><span class="stat-val" id="st-platforms">0</span><span class="stat-label">モール数</span></div>
+  </div>
+</div>
+
+<div class="toolbar">
+  <div class="toolbar-inner">
+    <div class="search-wrap">
+      <span class="search-icon">🔍</span>
+      <input type="text" id="search" placeholder="商品名・ASIN・タグで検索...">
+    </div>
+    <div class="filter-group" id="filters">
+      <button class="filter-btn active" data-filter="all">すべて</button>
+      <button class="filter-btn" data-filter="Amazon">Amazon</button>
+      <button class="filter-btn" data-filter="楽天">楽天</button>
+      <button class="filter-btn" data-filter="Yahoo">Yahoo</button>
+    </div>
+    <span class="count-badge" id="count-badge"></span>
+  </div>
+</div>
+
+<div class="main">
+  <div class="section-heading" id="section-label">全レポート</div>
+  <div class="report-grid" id="grid"></div>
+  <div class="empty" id="empty" style="display:none">
+    <div class="icon">📭</div>
+    <p>該当するレポートが見つかりません。</p>
+  </div>
+</div>
+
+<script>
+/* =====================================================================
+   REPORTS — Claude はここを更新します（新規レポート追加時）
+   ===================================================================== */
+const REPORTS = [
+  {
+    id:        "babyrobe-2026-06",
+    createdAt: "2026-06-03",
+    period:    "2026年3〜5月",
+    product:   "ベビーバスローブ",
+    category:  "ベビー用品",
+    brand:     "BabyGoo",
+    asin:      "B0FC6884VV",
+    platforms: ["Amazon", "楽天"],
+    summary:   "3〜5月3ヶ月分析。5月に正価（4,480円）運用でROAS 239%・粗利率34.45%を達成。楽天はスーパーセール依存型の構造が確定。Amazon主軸で収益最大化を推奨。",
+    kpi: [
+      { label: "Amazon売上（累計）", value: "91.2万円",  good: true  },
+      { label: "Amazon ROAS（5月）",  value: "239%",     good: true  },
+      { label: "Amazon CVR（5月）",   value: "13.04%",   good: true  },
+      { label: "TACOS（5月）",        value: "24.4%",    good: true  }
+    ],
+    tags: ["Amazon重点", "価格戦略", "新規商品", "ギフト需要"],
+    file: "2026-06/babyrobe.html"
+  }
+  /* ── ここに次のレポートを追加 ──
+  ,{
+    id:        "商品名-YYYY-MM",
+    createdAt: "YYYY-MM-DD",
+    period:    "YYYY年M〜M月",
+    product:   "商品名",
+    category:  "カテゴリ",
+    brand:     "ブランド",
+    asin:      "ASINXXXXXXXX",
+    platforms: ["Amazon"],
+    summary:   "サマリー文",
+    kpi: [
+      { label: "指標1", value: "値1", good: true },
+      { label: "指標2", value: "値2", good: false }
+    ],
+    tags: ["タグ1", "タグ2"],
+    file: "YYYY-MM/product.html"
+  }
+  */
+];
+/* ===================================================================== */
+
+// ── Stats ──────────────────────────────────────────────────────────────
+document.getElementById('today').textContent =
+  new Date().toLocaleDateString('ja-JP',{year:'numeric',month:'long',day:'numeric'});
+document.getElementById('st-total').textContent    = REPORTS.length;
+document.getElementById('st-products').textContent = new Set(REPORTS.map(r=>r.product)).size;
+const allPeriods = REPORTS.flatMap(r => r.period.match(/\d+月/g)||[]);
+document.getElementById('st-months').textContent   = new Set(allPeriods).size;
+document.getElementById('st-platforms').textContent = new Set(REPORTS.flatMap(r=>r.platforms)).size;
+
+// ── Render ─────────────────────────────────────────────────────────────
+function render(list) {
+  const grid  = document.getElementById('grid');
+  const empty = document.getElementById('empty');
+  const badge = document.getElementById('count-badge');
+  badge.textContent = `${list.length} 件`;
+  if (!list.length) { grid.innerHTML=''; empty.style.display='block'; return; }
+  empty.style.display = 'none';
+  grid.innerHTML = list.map(r => {
+    const ptags = r.platforms.map(p => {
+      const cls = p==='Amazon'?'tag-amazon':p==='楽天'?'tag-rakuten':'tag-yahoo';
+      return `<span class="tag-platform ${cls}">${p}</span>`;
+    }).join('');
+    const kpiCells = r.kpi.map(k =>
+      `<div class="kpi-cell${k.good?' good':''}">
+         <div class="kv">${k.value}</div>
+         <div class="kl">${k.label}</div>
+       </div>`).join('');
+    const tags = r.tags.map(t=>`<span class="card-tag">${t}</span>`).join('');
+    return `
+    <div class="report-card" data-platforms="${r.platforms.join(',')}" data-id="${r.id}">
+      <div class="card-top">
+        <div class="card-meta">
+          ${ptags}
+          <span class="card-date">${r.createdAt}</span>
+        </div>
+        <div class="card-title">${r.product}</div>
+        <div class="card-period">${r.period}｜${r.category}｜${r.brand}</div>
+        <div class="card-summary">${r.summary}</div>
+        <div class="kpi-row">${kpiCells}</div>
+        <div class="card-tags">${tags}</div>
+      </div>
+      <div class="card-bottom">
+        <span class="card-asin">${r.asin||''}</span>
+        <a class="card-link" href="${r.file}" target="_blank">レポートを開く →</a>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+// ── Filter & Search ────────────────────────────────────────────────────
+let currentFilter = 'all';
+let currentSearch = '';
+
+function applyFilters() {
+  let list = REPORTS;
+  if (currentFilter !== 'all')
+    list = list.filter(r => r.platforms.includes(currentFilter));
+  if (currentSearch) {
+    const q = currentSearch.toLowerCase();
+    list = list.filter(r =>
+      r.product.toLowerCase().includes(q)  ||
+      (r.asin||'').toLowerCase().includes(q) ||
+      r.tags.some(t => t.toLowerCase().includes(q)) ||
+      r.summary.toLowerCase().includes(q)
+    );
+  }
+  const label = currentFilter === 'all' ? '全レポート' : currentFilter + ' レポート';
+  document.getElementById('section-label').textContent = label;
+  render(list);
+}
+
+document.querySelectorAll('.filter-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('.filter-btn').forEach(b=>b.classList.remove('active'));
+    btn.classList.add('active');
+    currentFilter = btn.dataset.filter;
+    applyFilters();
+  });
+});
+document.getElementById('search').addEventListener('input', e => {
+  currentSearch = e.target.value.trim();
+  applyFilters();
+});
+
+applyFilters();
+</script>
+</body>
+</html>

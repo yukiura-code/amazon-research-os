@@ -1,7 +1,7 @@
-# 一時ファイル
+# ルートの一時ファイル
+/index.html
 *.tmp
 *.log
-index.html
 
 # Windowsシステム
 Thumbs.db
