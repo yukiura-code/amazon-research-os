@@ -1,0 +1,16 @@
+# 一時ファイル
+*.tmp
+*.log
+index.html
+
+# Windowsシステム
+Thumbs.db
+desktop.ini
+
+# Python
+__pycache__/
+*.pyc
+
+# エディタ
+.vscode/
+*.swp
