@@ -1,0 +1,1189 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ベビーバスローブ 分析レポート 2026年3〜5月</title>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+  <style>
+    :root {
+      --primary: #1a2b4a;
+      --accent: #e8630a;
+      --accent2: #2e7dd1;
+      --bg: #f4f6f9;
+      --card: #ffffff;
+      --text: #1e2a3a;
+      --muted: #6b7a8d;
+      --border: #dde2ea;
+      --positive: #1a7f4b;
+      --negative: #c0392b;
+      --warn: #d4860a;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: 'Helvetica Neue', 'Noto Sans JP', Arial, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      font-size: 15px;
+      line-height: 1.6;
+    }
+    .header {
+      background: var(--primary);
+      color: #fff;
+      padding: 48px 48px 36px;
+    }
+    .header-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      flex-wrap: wrap;
+      gap: 16px;
+    }
+    .header h1 { font-size: 26px; font-weight: 700; letter-spacing: 0.02em; line-height: 1.35; }
+    .header .subtitle { margin-top: 8px; font-size: 14px; opacity: 0.75; }
+    .header-meta { text-align: right; font-size: 13px; opacity: 0.7; line-height: 1.8; }
+    .asin-badge {
+      display: inline-block;
+      margin-top: 12px;
+      padding: 4px 12px;
+      border: 1px solid rgba(255,255,255,0.35);
+      border-radius: 20px;
+      font-size: 12px;
+      letter-spacing: 0.05em;
+    }
+    .nav {
+      background: #243558;
+      padding: 0 48px;
+      display: flex;
+      gap: 0;
+      overflow-x: auto;
+    }
+    .nav a {
+      color: rgba(255,255,255,0.65);
+      text-decoration: none;
+      padding: 14px 18px;
+      font-size: 13px;
+      white-space: nowrap;
+      border-bottom: 2px solid transparent;
+      transition: all 0.2s;
+    }
+    .nav a:hover { color: #fff; border-color: var(--accent); }
+    .main { max-width: 1100px; margin: 0 auto; padding: 40px 24px 80px; }
+    .section { margin-bottom: 56px; }
+    .section-title {
+      font-size: 18px;
+      font-weight: 700;
+      color: var(--primary);
+      padding-bottom: 10px;
+      border-bottom: 2px solid var(--accent);
+      margin-bottom: 24px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .section-title .num {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 28px;
+      height: 28px;
+      background: var(--accent);
+      color: #fff;
+      border-radius: 50%;
+      font-size: 14px;
+    }
+    .kpi-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: 16px;
+      margin-bottom: 32px;
+    }
+    .kpi-card {
+      background: var(--card);
+      border-radius: 10px;
+      padding: 20px 20px 16px;
+      box-shadow: 0 1px 4px rgba(0,0,0,0.07);
+      border-top: 3px solid var(--accent2);
+    }
+    .kpi-card.amazon { border-top-color: #e8630a; }
+    .kpi-card.rakuten { border-top-color: #bf0000; }
+    .kpi-card .label { font-size: 12px; color: var(--muted); margin-bottom: 6px; }
+    .kpi-card .value { font-size: 22px; font-weight: 700; color: var(--primary); }
+    .kpi-card .sub { font-size: 12px; color: var(--muted); margin-top: 4px; }
+    .table-wrap { overflow-x: auto; margin-bottom: 24px; }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 13.5px;
+      background: var(--card);
+      border-radius: 10px;
+      overflow: hidden;
+      box-shadow: 0 1px 4px rgba(0,0,0,0.07);
+    }
+    thead tr { background: var(--primary); color: #fff; }
+    thead th {
+      padding: 12px 14px;
+      text-align: left;
+      font-weight: 600;
+      font-size: 12.5px;
+      letter-spacing: 0.03em;
+      white-space: nowrap;
+    }
+    thead th.center { text-align: center; }
+    tbody tr { border-bottom: 1px solid var(--border); }
+    tbody tr:last-child { border-bottom: none; }
+    tbody tr:hover { background: #f8fafc; }
+    tbody td { padding: 11px 14px; vertical-align: middle; }
+    tbody td.right { text-align: right; font-variant-numeric: tabular-nums; }
+    tbody td.center { text-align: center; }
+    .row-header { font-weight: 600; background: #f8fafc; color: var(--primary); font-size: 13px; }
+    .highlight-positive { color: var(--positive); font-weight: 700; }
+    .highlight-negative { color: var(--negative); font-weight: 700; }
+    .highlight-warn { color: var(--warn); font-weight: 700; }
+    .platform-tag {
+      display: inline-block;
+      padding: 2px 8px;
+      border-radius: 4px;
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.04em;
+    }
+    .tag-amazon { background: #fff3e6; color: #c45c00; }
+    .tag-rakuten { background: #fff0f0; color: #a00000; }
+    .compare-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 20px;
+      margin-bottom: 24px;
+    }
+    @media(max-width: 600px){ .compare-grid { grid-template-columns: 1fr; } }
+    .compare-card {
+      background: var(--card);
+      border-radius: 10px;
+      padding: 24px;
+      box-shadow: 0 1px 4px rgba(0,0,0,0.07);
+    }
+    .compare-card h3 { font-size: 15px; font-weight: 700; margin-bottom: 16px; }
+    .bar-row { margin-bottom: 12px; }
+    .bar-label { font-size: 12px; color: var(--muted); margin-bottom: 4px; display: flex; justify-content: space-between; }
+    .bar-track { height: 8px; background: var(--bg); border-radius: 4px; overflow: hidden; }
+    .bar-fill { height: 100%; border-radius: 4px; }
+    .insight-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 16px;
+      margin-bottom: 24px;
+    }
+    .insight-card {
+      background: var(--card);
+      border-radius: 10px;
+      padding: 20px 22px;
+      box-shadow: 0 1px 4px rgba(0,0,0,0.07);
+      border-left: 4px solid var(--accent2);
+    }
+    .insight-card.warn { border-left-color: var(--warn); }
+    .insight-card.danger { border-left-color: var(--negative); }
+    .insight-card.success { border-left-color: var(--positive); }
+    .insight-card h4 { font-size: 13.5px; font-weight: 700; margin-bottom: 8px; color: var(--primary); }
+    .insight-card p { font-size: 13px; color: #4a5568; line-height: 1.65; }
+    .action-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 20px;
+      margin-bottom: 24px;
+    }
+    @media(max-width: 700px){ .action-grid { grid-template-columns: 1fr; } }
+    .action-block {
+      background: var(--card);
+      border-radius: 10px;
+      padding: 22px 24px;
+      box-shadow: 0 1px 4px rgba(0,0,0,0.07);
+    }
+    .action-block h3 {
+      font-size: 14px;
+      font-weight: 700;
+      margin-bottom: 14px;
+      color: var(--primary);
+      border-bottom: 1px solid var(--border);
+      padding-bottom: 10px;
+    }
+    .action-item {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 10px;
+      font-size: 13px;
+      line-height: 1.6;
+      color: #3a4a5a;
+    }
+    .action-item .icon {
+      flex-shrink: 0;
+      width: 20px;
+      height: 20px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 11px;
+      font-weight: 700;
+      margin-top: 2px;
+    }
+    .icon-amazon { background: #fff3e6; color: #c45c00; }
+    .icon-rakuten { background: #fff0f0; color: #a00000; }
+    .icon-both { background: #e8f0fe; color: #2e7dd1; }
+    .unit-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 20px;
+      margin-bottom: 24px;
+    }
+    @media(max-width: 600px){ .unit-grid { grid-template-columns: 1fr; } }
+    .unit-card {
+      background: var(--card);
+      border-radius: 10px;
+      padding: 22px 24px;
+      box-shadow: 0 1px 4px rgba(0,0,0,0.07);
+    }
+    .unit-card h3 { font-size: 14px; font-weight: 700; margin-bottom: 16px; color: var(--primary); }
+    .unit-row {
+      display: flex;
+      justify-content: space-between;
+      padding: 7px 0;
+      border-bottom: 1px solid var(--border);
+      font-size: 13px;
+    }
+    .unit-row:last-child { border-bottom: none; font-weight: 700; font-size: 14px; }
+    .unit-row .unit-label { color: var(--muted); }
+    .unit-row .unit-val { font-variant-numeric: tabular-nums; }
+    .profit-positive { color: var(--positive); }
+    .profit-negative { color: var(--negative); }
+    .ci-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 16px;
+      margin-bottom: 24px;
+    }
+    @media(max-width: 700px){ .ci-grid { grid-template-columns: 1fr; } }
+    .ci-card {
+      background: var(--card);
+      border-radius: 10px;
+      padding: 20px;
+      box-shadow: 0 1px 4px rgba(0,0,0,0.07);
+      text-align: center;
+    }
+    .ci-card .ci-icon { font-size: 28px; margin-bottom: 10px; }
+    .ci-card h4 { font-size: 13px; font-weight: 700; margin-bottom: 8px; color: var(--primary); }
+    .ci-card p { font-size: 12.5px; color: #4a5568; line-height: 1.6; }
+    .footer {
+      background: var(--primary);
+      color: rgba(255,255,255,0.5);
+      text-align: center;
+      padding: 24px;
+      font-size: 12px;
+    }
+    .callout {
+      background: #fff8e6;
+      border: 1px solid #f5c842;
+      border-left: 4px solid #f5c842;
+      border-radius: 8px;
+      padding: 14px 18px;
+      font-size: 13px;
+      margin-bottom: 20px;
+      color: #5a4a00;
+    }
+    .callout strong { color: #3a3000; }
+    .note { font-size: 12px; color: var(--muted); margin-top: 8px; }
+
+    /* ── SECTION 7: 施策効果グラフ ─────────────────── */
+    .施策-timeline {
+      display: flex;
+      gap: 12px;
+      margin-bottom: 20px;
+      flex-wrap: wrap;
+    }
+    .施策-badge {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      background: var(--card);
+      border-radius: 8px;
+      padding: 10px 16px;
+      font-size: 13px;
+      box-shadow: 0 1px 4px rgba(0,0,0,0.07);
+    }
+    .施策-badge .施策-dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      flex-shrink: 0;
+    }
+    .施策-badge .施策-label { font-weight: 600; color: var(--primary); }
+    .施策-badge .施策-desc { font-size: 12px; color: var(--muted); }
+    .chart-wrap {
+      background: var(--card);
+      border-radius: 10px;
+      padding: 24px;
+      box-shadow: 0 1px 4px rgba(0,0,0,0.07);
+      margin-bottom: 24px;
+    }
+    .chart-wrap h3 { font-size: 14px; font-weight: 700; color: var(--primary); margin-bottom: 16px; }
+    .chart-legend {
+      display: flex;
+      gap: 16px;
+      flex-wrap: wrap;
+      margin-bottom: 12px;
+      font-size: 12px;
+      color: var(--muted);
+    }
+    .chart-legend span { display: flex; align-items: center; gap: 5px; }
+    .legend-line {
+      display: inline-block;
+      width: 20px;
+      height: 3px;
+      border-radius: 2px;
+    }
+    .ba-grid {
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 12px;
+      margin-bottom: 20px;
+    }
+    @media(max-width: 800px){ .ba-grid { grid-template-columns: repeat(3, 1fr); } }
+    @media(max-width: 500px){ .ba-grid { grid-template-columns: 1fr 1fr; } }
+    .ba-card {
+      background: var(--card);
+      border-radius: 10px;
+      padding: 16px 14px;
+      box-shadow: 0 1px 4px rgba(0,0,0,0.07);
+      text-align: center;
+    }
+    .ba-card .ba-label { font-size: 11px; color: var(--muted); margin-bottom: 8px; font-weight: 600; letter-spacing: 0.03em; }
+    .ba-card .ba-before { font-size: 13px; color: var(--muted); }
+    .ba-card .ba-arrow { font-size: 18px; margin: 4px 0; }
+    .ba-card .ba-after { font-size: 15px; font-weight: 700; }
+    .ba-card .ba-change { font-size: 12px; font-weight: 700; margin-top: 4px; padding: 2px 8px; border-radius: 12px; display: inline-block; }
+    .change-positive .ba-after { color: var(--positive); }
+    .change-positive .ba-change { background: #e8f5ef; color: var(--positive); }
+    .change-negative .ba-after { color: var(--negative); }
+    .change-negative .ba-change { background: #fdecea; color: var(--negative); }
+    .change-neutral .ba-after { color: var(--muted); }
+    .change-neutral .ba-change { background: #f4f6f9; color: var(--muted); }
+    .period-note {
+      font-size: 12px;
+      color: var(--muted);
+      background: #f8fafc;
+      border-radius: 6px;
+      padding: 8px 14px;
+      margin-bottom: 16px;
+      border-left: 3px solid var(--border);
+    }
+  </style>
+</head>
+<body>
+
+<!-- Header -->
+<div class="header">
+  <div class="header-top">
+    <div>
+      <div style="font-size:12px;opacity:0.6;margin-bottom:6px;letter-spacing:0.08em;">PRODUCT ANALYSIS REPORT</div>
+      <h1>ベビーバスローブ 販売分析レポート</h1>
+      <div class="subtitle">Amazon × 楽天市場｜対象期間：2026年3月〜5月</div>
+      <div class="asin-badge">Amazon ASIN: B0FC6884VV｜楽天 bathrobe｜発売日 2024/12/03</div>
+    </div>
+    <div class="header-meta">
+      <div>作成日：2026年6月4日</div>
+      <div>BabyGoo</div>
+    </div>
+  </div>
+</div>
+
+<!-- Nav -->
+<nav class="nav">
+  <a href="#summary">月次サマリー</a>
+  <a href="#channel">チャネル比較</a>
+  <a href="#overview">モール別総括</a>
+  <a href="#unit">ユニットエコノミクス</a>
+  <a href="#insight">顧客インサイト</a>
+  <a href="#action">アクション案</a>
+  <a href="#施策">施策効果</a>
+</nav>
+
+<div class="main">
+
+  <!-- ===== SECTION 1: 月次サマリー ===== -->
+  <div class="section" id="summary">
+    <div class="section-title"><span class="num">1</span>月次サマリー比較</div>
+
+    <div style="margin-bottom:16px;font-size:13px;color:var(--muted);">
+      <span class="platform-tag tag-amazon">Amazon</span>&nbsp;SP広告合計を計上。CVR＝セッション→購入の転換率&nbsp;／&nbsp;
+      <span class="platform-tag tag-rakuten">楽天</span>&nbsp;CVRは12時間アトリビューション
+    </div>
+
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th style="min-width:200px;">指標</th>
+            <th class="center">3月</th>
+            <th class="center">4月</th>
+            <th class="center">5月</th>
+          </tr>
+        </thead>
+        <tbody>
+          <!-- Amazon -->
+          <tr><td class="row-header" colspan="4"><span class="platform-tag tag-amazon">Amazon</span>&nbsp;B0FC6884VV</td></tr>
+          <tr>
+            <td>売上数量</td>
+            <td class="center">96件</td>
+            <td class="center highlight-positive">104件</td>
+            <td class="center highlight-negative">57件</td>
+          </tr>
+          <tr>
+            <td>売上金額</td>
+            <td class="center">346,351円</td>
+            <td class="center highlight-positive">353,420円</td>
+            <td class="center highlight-negative">211,860円</td>
+          </tr>
+          <tr>
+            <td>アクセス人数</td>
+            <td class="center">989人</td>
+            <td class="center highlight-positive">1,220人</td>
+            <td class="center highlight-negative">437人</td>
+          </tr>
+          <tr>
+            <td>広告費（SP）</td>
+            <td class="center">105,285円</td>
+            <td class="center highlight-negative">122,767円</td>
+            <td class="center highlight-positive">51,694円</td>
+          </tr>
+          <tr>
+            <td>CTR（SP）</td>
+            <td class="center highlight-positive">0.40%</td>
+            <td class="center">0.38%</td>
+            <td class="center highlight-negative">0.36%</td>
+          </tr>
+          <tr>
+            <td>CPC</td>
+            <td class="center highlight-negative">124円</td>
+            <td class="center">121円</td>
+            <td class="center highlight-positive">98円</td>
+          </tr>
+          <tr>
+            <td>CVR（セッション→購入）</td>
+            <td class="center">9.71%</td>
+            <td class="center highlight-negative">8.52%</td>
+            <td class="center highlight-positive">13.04%</td>
+          </tr>
+          <tr>
+            <td>ROAS</td>
+            <td class="center">211%</td>
+            <td class="center highlight-negative">190%</td>
+            <td class="center highlight-positive">239%</td>
+          </tr>
+          <tr>
+            <td>TACOS</td>
+            <td class="center highlight-warn">30.4%</td>
+            <td class="center highlight-negative">34.7%</td>
+            <td class="center highlight-positive">24.4%</td>
+          </tr>
+          <tr>
+            <td>粗利</td>
+            <td class="center highlight-positive">94,234円</td>
+            <td class="center highlight-negative">71,585円</td>
+            <td class="center">72,984円</td>
+          </tr>
+          <tr>
+            <td>粗利率</td>
+            <td class="center">27.2%</td>
+            <td class="center highlight-negative">20.3%</td>
+            <td class="center highlight-positive"><strong>34.5%</strong></td>
+          </tr>
+          <!-- 楽天 -->
+          <tr><td class="row-header" colspan="4" style="padding-top:14px;"><span class="platform-tag tag-rakuten">楽天市場</span>&nbsp;bathrobe</td></tr>
+          <tr>
+            <td>売上点数</td>
+            <td class="center highlight-positive">45点</td>
+            <td class="center">11点</td>
+            <td class="center highlight-negative">4点</td>
+          </tr>
+          <tr>
+            <td>売上金額</td>
+            <td class="center highlight-positive">141,600円</td>
+            <td class="center">49,280円</td>
+            <td class="center highlight-negative">17,920円</td>
+          </tr>
+          <tr>
+            <td>アクセス人数</td>
+            <td class="center highlight-positive">1,076人</td>
+            <td class="center">386人</td>
+            <td class="center highlight-negative">382人</td>
+          </tr>
+          <tr>
+            <td>広告費（RPP）</td>
+            <td class="center highlight-negative">14,890円</td>
+            <td class="center">5,583円</td>
+            <td class="center highlight-positive">3,478円</td>
+          </tr>
+          <tr>
+            <td>CTR（RPP）</td>
+            <td class="center highlight-positive">0.17%</td>
+            <td class="center">0.10%</td>
+            <td class="center highlight-negative">0.07%</td>
+          </tr>
+          <tr>
+            <td>CPC実績</td>
+            <td class="center">25円</td>
+            <td class="center highlight-negative">27円</td>
+            <td class="center highlight-positive">15円</td>
+          </tr>
+          <tr>
+            <td>CVR（12時間）</td>
+            <td class="center highlight-positive">1.50%</td>
+            <td class="center">0.95%</td>
+            <td class="center highlight-negative">0.44%</td>
+          </tr>
+          <tr>
+            <td>ROAS（12時間）</td>
+            <td class="center">230%</td>
+            <td class="center highlight-positive">241%</td>
+            <td class="center highlight-negative">129%</td>
+          </tr>
+          <tr>
+            <td>ACOS</td>
+            <td class="center">43.4%</td>
+            <td class="center highlight-positive">41.5%</td>
+            <td class="center highlight-negative"><strong>77.6%</strong></td>
+          </tr>
+          <tr>
+            <td>粗利（RPP差引）</td>
+            <td class="center highlight-positive">126,710円</td>
+            <td class="center">43,697円</td>
+            <td class="center highlight-negative">14,442円</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="note">※楽天の粗利はRPP広告費のみ控除（仕入・送料・楽天手数料は非計上）</div>
+  </div>
+
+  <!-- ===== SECTION 2: チャネル構成 ===== -->
+  <div class="section" id="channel">
+    <div class="section-title"><span class="num">2</span>チャネル構成（3〜5月累計）</div>
+
+    <div class="kpi-grid">
+      <div class="kpi-card amazon">
+        <div class="label">Amazon 累計売上</div>
+        <div class="value">911,631円</div>
+        <div class="sub">構成比 81.4%｜257件</div>
+      </div>
+      <div class="kpi-card rakuten">
+        <div class="label">楽天 累計売上</div>
+        <div class="value">208,800円</div>
+        <div class="sub">構成比 18.6%｜60点</div>
+      </div>
+      <div class="kpi-card">
+        <div class="label">合計売上（3ヶ月）</div>
+        <div class="value">1,120,431円</div>
+        <div class="sub">総販売数 317点</div>
+      </div>
+      <div class="kpi-card">
+        <div class="label">5月末 日次実績（Amazon）</div>
+        <div class="value">3〜8件/日</div>
+        <div class="sub">5/27:8件 5/28:6件 5/29:3件 5/30:4件 5/31:8件</div>
+      </div>
+    </div>
+
+    <div class="compare-grid">
+      <div class="compare-card">
+        <h3>売上金額 月次推移</h3>
+        <div class="bar-row">
+          <div class="bar-label"><span>Amazon 3月</span><span>346,351円</span></div>
+          <div class="bar-track"><div class="bar-fill" style="width:98%;background:#e8630a;"></div></div>
+        </div>
+        <div class="bar-row">
+          <div class="bar-label"><span>Amazon 4月</span><span>353,420円 ◀ ピーク</span></div>
+          <div class="bar-track"><div class="bar-fill" style="width:100%;background:#e8630a;"></div></div>
+        </div>
+        <div class="bar-row">
+          <div class="bar-label"><span>Amazon 5月</span><span>211,860円</span></div>
+          <div class="bar-track"><div class="bar-fill" style="width:60%;background:#f0a060;"></div></div>
+        </div>
+        <div class="bar-row" style="margin-top:12px;">
+          <div class="bar-label"><span>楽天 3月</span><span>141,600円 ◀ スーパーセール</span></div>
+          <div class="bar-track"><div class="bar-fill" style="width:40%;background:#bf0000;"></div></div>
+        </div>
+        <div class="bar-row">
+          <div class="bar-label"><span>楽天 4月</span><span>49,280円</span></div>
+          <div class="bar-track"><div class="bar-fill" style="width:14%;background:#bf0000;"></div></div>
+        </div>
+        <div class="bar-row">
+          <div class="bar-label"><span>楽天 5月</span><span>17,920円</span></div>
+          <div class="bar-track"><div class="bar-fill" style="width:5%;background:#bf0000;"></div></div>
+        </div>
+      </div>
+      <div class="compare-card">
+        <h3>粗利率 月次推移（Amazon）</h3>
+        <div class="bar-row">
+          <div class="bar-label"><span>3月</span><span>27.2%</span></div>
+          <div class="bar-track"><div class="bar-fill" style="width:45%;background:#2e7dd1;"></div></div>
+        </div>
+        <div class="bar-row">
+          <div class="bar-label"><span>4月 ▼ 広告費増加</span><span style="color:var(--negative);">20.3%</span></div>
+          <div class="bar-track"><div class="bar-fill" style="width:34%;background:#c0392b;"></div></div>
+        </div>
+        <div class="bar-row">
+          <div class="bar-label"><span>5月 ▲ 広告費削減効果</span><span style="color:var(--positive);">34.5%</span></div>
+          <div class="bar-track"><div class="bar-fill" style="width:57%;background:#1a7f4b;"></div></div>
+        </div>
+        <div style="margin-top:16px;font-size:12px;color:var(--muted);">CVR推移（セッション→購入）</div>
+        <div class="bar-row" style="margin-top:8px;">
+          <div class="bar-label"><span>3月</span><span>9.71%</span></div>
+          <div class="bar-track"><div class="bar-fill" style="width:74%;background:#2e7dd1;"></div></div>
+        </div>
+        <div class="bar-row">
+          <div class="bar-label"><span>4月</span><span>8.52%</span></div>
+          <div class="bar-track"><div class="bar-fill" style="width:65%;background:#2e7dd1;"></div></div>
+        </div>
+        <div class="bar-row">
+          <div class="bar-label"><span>5月 ▲ 最高</span><span style="color:var(--positive);">13.04%</span></div>
+          <div class="bar-track"><div class="bar-fill" style="width:100%;background:#1a7f4b;"></div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== SECTION 3: モール別総括 ===== -->
+  <div class="section" id="overview">
+    <div class="section-title"><span class="num">3</span>モール別総括</div>
+
+    <div class="insight-grid">
+      <div class="insight-card success">
+        <h4>Amazon｜5月が3ヶ月最高の収益効率</h4>
+        <p>4月が売上ピーク（353,420円）だが、セール値引き＋広告費増加で<strong>粗利率は最低（20.3%）</strong>。5月は広告費を51,694円に圧縮（前月比 −58%）したことで粗利率34.5%・ROAS 239%・TACOS 24.4%を達成。売上規模より利益の質が大幅改善。</p>
+      </div>
+      <div class="insight-card warn">
+        <h4>Amazon｜アクセス激減が構造的課題</h4>
+        <p>5月アクセス437人は4月1,220人の<strong>36%まで急落</strong>。CVR 13.04%と購買意欲は高いにもかかわらず、広告費削減によるトラフィック蒸発が売上を押し下げている。CTRも0.40%→0.36%と3ヶ月連続低下しており、サムネ・タイトルの見直しが急務。</p>
+      </div>
+      <div class="insight-card danger">
+        <h4>楽天｜通常期は機能不全・ACOS採算割れ</h4>
+        <p>3月スーパーセール期間（3/4〜3/10）に45点中の約8割が集中。セール外の5月は<strong>CVR 0.44%・ACOS 77.6%</strong>と採算割れ水準。382人が訪問して4点しか購入せず、RPP 3,478円の投下効率が極めて低い状態。通常期戦略の抜本的見直しが必要。</p>
+      </div>
+      <div class="insight-card">
+        <h4>楽天｜RPP CTRの一貫した低下</h4>
+        <p>RPP CTRが<strong>0.17%→0.10%→0.07%</strong>と3ヶ月連続低下。検索面での掲載順位低下またはクリエイティブと検索意図のミスマッチが疑われる。キーワードマッチと商品ページファーストビューの見直しが必要。</p>
+      </div>
+    </div>
+
+    <div class="callout">
+      <strong>直近（5月末〜6月）の状況：</strong>
+      Amazon 5月27〜31日に29個・86,420円（セール価格2,980円）の急増あり、5月全体の41%が最終5日間に集中。6月スーパーセール（6月後半予定）は楽天回復の最大チャンス。3月スーパーセール実績（45点・141,600円）を参照し、<strong>6月中旬までにRPP予算確保・バナー更新を完了</strong>させること。
+    </div>
+  </div>
+
+  <!-- ===== SECTION 4: ユニットエコノミクス ===== -->
+  <div class="section" id="unit">
+    <div class="section-title"><span class="num">4</span>ユニットエコノミクス（1個あたり採算）</div>
+
+    <div class="unit-grid">
+      <div class="unit-card">
+        <h3>正価 4,480円（推奨）</h3>
+        <div class="unit-row">
+          <span class="unit-label">販売金額</span>
+          <span class="unit-val">4,480円</span>
+        </div>
+        <div class="unit-row">
+          <span class="unit-label">仕入れ原価</span>
+          <span class="unit-val">▲ 900円</span>
+        </div>
+        <div class="unit-row">
+          <span class="unit-label">送料費</span>
+          <span class="unit-val">▲ 506円</span>
+        </div>
+        <div class="unit-row">
+          <span class="unit-label">在庫保管費</span>
+          <span class="unit-val">▲ 34円</span>
+        </div>
+        <div class="unit-row">
+          <span class="unit-label">Amazon手数料（flat）</span>
+          <span class="unit-val">▲ 90円</span>
+        </div>
+        <div class="unit-row">
+          <span class="unit-label">広告費（TACOS 24.4%）</span>
+          <span class="unit-val">▲ 1,093円</span>
+        </div>
+        <div class="unit-row">
+          <span class="unit-label profit-positive">1個あたり推定粗利</span>
+          <span class="unit-val profit-positive"><strong>1,857円（41.5%）</strong></span>
+        </div>
+      </div>
+      <div class="unit-card">
+        <h3>セール価格 2,980円</h3>
+        <div class="unit-row">
+          <span class="unit-label">販売金額</span>
+          <span class="unit-val">2,980円</span>
+        </div>
+        <div class="unit-row">
+          <span class="unit-label">仕入れ原価</span>
+          <span class="unit-val">▲ 900円</span>
+        </div>
+        <div class="unit-row">
+          <span class="unit-label">送料費</span>
+          <span class="unit-val">▲ 506円</span>
+        </div>
+        <div class="unit-row">
+          <span class="unit-label">在庫保管費</span>
+          <span class="unit-val">▲ 34円</span>
+        </div>
+        <div class="unit-row">
+          <span class="unit-label">Amazon手数料（flat）</span>
+          <span class="unit-val">▲ 90円</span>
+        </div>
+        <div class="unit-row">
+          <span class="unit-label">広告費（TACOS 30.4%）</span>
+          <span class="unit-val">▲ 906円</span>
+        </div>
+        <div class="unit-row">
+          <span class="unit-label profit-positive">1個あたり推定粗利</span>
+          <span class="unit-val profit-positive"><strong>544円（18.3%）</strong></span>
+        </div>
+      </div>
+    </div>
+    <div class="callout">
+      <strong>価格インパクト：</strong>正価（4,480円）はセール価格（2,980円）比で<strong>1個あたり粗利が約3.4倍</strong>（1,857円 vs 544円）。セール期間は数量が増えてもトータル収益の改善幅は小さく、通常期の正価4,480円維持が収益構造の根幹。
+    </div>
+  </div>
+
+  <!-- ===== SECTION 5: 顧客インサイト ===== -->
+  <div class="section" id="insight">
+    <div class="section-title"><span class="num">5</span>顧客インサイト × マーケ観点</div>
+
+    <div class="ci-grid">
+      <div class="ci-card">
+        <div class="ci-icon">👶</div>
+        <h4>購買ターゲット</h4>
+        <p>主な購買者は<strong>出産前後の親・ベビーギフト購入者</strong>。3月需要ピークは新生活（出産・進級）シーズンと一致。4,480円の価格帯はギフト予算にフィットし、出産祝い需要が相当数混在していると推定される。</p>
+      </div>
+      <div class="ci-card">
+        <div class="ci-icon">🎯</div>
+        <h4>Amazon：高意図ユーザー</h4>
+        <p>CVR 9〜13%は同カテゴリ平均を大幅に上回る水準。比較検討よりも<strong>購買意図が明確な「指名買い」</strong>に近い行動パターン。5月のアクセス減少下でもCVR 13%を維持できたのはブランド認知の底堅さの証左。</p>
+      </div>
+      <div class="ci-card">
+        <div class="ci-icon">🛒</div>
+        <h4>楽天：ポイント・価格感度層</h4>
+        <p>CVR 0.44〜1.5%はAmazonの1/10以下。<strong>回遊型・ポイント目的の購買層</strong>が中心で、商品への購買意図が薄い。スーパーセール等の「お得感」がトリガーにならないと購買に至らず、通常期RPPのROIは低い。</p>
+      </div>
+      <div class="ci-card">
+        <div class="ci-icon">🎁</div>
+        <h4>ギフト需要の開拓余地</h4>
+        <p>4,480円の単価でも高CVRが維持されており、<strong>ギフトユースの潜在需要</strong>が大きい。「出産祝い」「産後 バスローブ」等のギフト向けキーワード追加と、のし・ラッピング対応訴求の強化で新規層へリーチ可能。</p>
+      </div>
+      <div class="ci-card">
+        <div class="ci-icon">📅</div>
+        <h4>季節性リスク</h4>
+        <p>6〜8月はベビー用品全般で需要低期の傾向。<strong>秋冬（9〜11月）に需要が回帰</strong>する見込みで、在庫調達と広告予算の季節配分設計（プライムデー7月・秋冬需要9月〜）が必要。</p>
+      </div>
+      <div class="ci-card">
+        <div class="ci-icon">📊</div>
+        <h4>チャネル最適化の方向性</h4>
+        <p>Amazon：高CVR維持のための<strong>広告精度とページ品質</strong>が優先課題。楽天：通常期の投資効率が出ないため、<strong>セール集中型（年3〜4回）に絞り</strong>、リソースをAmazon深耕に振り向けることが合理的。</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== SECTION 6: アクション案 ===== -->
+  <div class="section" id="action">
+    <div class="section-title"><span class="num">6</span>アクション案</div>
+
+    <div class="table-wrap" style="margin-bottom:24px;">
+      <table>
+        <thead>
+          <tr>
+            <th style="min-width:120px;">軸</th>
+            <th><span class="platform-tag tag-amazon">Amazon</span></th>
+            <th><span class="platform-tag tag-rakuten">楽天市場</span></th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td class="row-header">価格戦略</td>
+            <td>4,480円正価を基本維持。セールはプライムデー等ビッグイベントに限定。粗利率34%ラインを死守。</td>
+            <td>通常期の値引き廃止。スーパーセール・お買い物マラソンに集中。ポイント倍率で実質値引き活用。</td>
+          </tr>
+          <tr>
+            <td class="row-header">広告</td>
+            <td>SP予算を6月8〜10万円規模に回復。TACOS 25%以内を目標。ASINターゲティング（競合ベビーバスローブ・育児関連）を深掘り。</td>
+            <td>非イベント期のRPP予算を削減または停止。6月スーパーセール前にのみ集中投下（日予算5,000円以上）。</td>
+          </tr>
+          <tr>
+            <td class="row-header">CVR改善</td>
+            <td>現状CVR 13%は高水準。CTR低下（0.40%→0.36%）対策としてサムネイル・タイトルのABテストを開始。</td>
+            <td>ファーストビュー抜本見直し。スーパーセール向けバナー・使用シーン画像強化。レビュー獲得施策継続。</td>
+          </tr>
+          <tr>
+            <td class="row-header">ギフト需要</td>
+            <td colspan="2" style="color:#3a4a5a;">「出産祝い」「産後 バスローブ」「ベビーギフト」等のKW追加。のし・ラッピング対応訴求をメイン画像・商品説明に追加。</td>
+          </tr>
+          <tr>
+            <td class="row-header">季節対応</td>
+            <td colspan="2" style="color:#3a4a5a;">6〜8月を需要低期と見て広告予算を抑制。秋冬需要（9月〜）に向け8月末までに在庫調達計画を確定。プライムデー（7月）はAmazonのみ集中投下。</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="action-grid">
+      <div class="action-block">
+        <h3>優先アクション（6月）</h3>
+        <div class="action-item">
+          <span class="icon icon-rakuten">R</span>
+          <span><strong>6月スーパーセールへの即時仕込み</strong>：RPP日予算を5,000円以上に引き上げ、バナー更新・価格設定を6月15日までに完了。3月実績45点を目標に在庫確認。</span>
+        </div>
+        <div class="action-item">
+          <span class="icon icon-amazon">A</span>
+          <span>SP広告費を<strong>月8万円規模に回復</strong>。6月末のアクセス800人・CVR 11%以上・TACOS 27%以内を目標値に設定。</span>
+        </div>
+        <div class="action-item">
+          <span class="icon icon-amazon">A</span>
+          <span>CTR改善のため<strong>サムネイル・タイトルABテスト</strong>を開始（目標: CTR 0.45%以上）。ギフトユース訴求画像の差し込みも検討。</span>
+        </div>
+      </div>
+      <div class="action-block">
+        <h3>中期アクション（7〜9月）</h3>
+        <div class="action-item">
+          <span class="icon icon-amazon">A</span>
+          <span><strong>Amazonプライムデー（7月）</strong>に向けたセール設定・在庫確保・広告予算積み増しを7月1日までに完了。目標：1週間で100件。</span>
+        </div>
+        <div class="action-item">
+          <span class="icon icon-both">共</span>
+          <span><strong>ギフトコンテンツ整備</strong>：のし・ラッピング対応訴求、ギフトKW追加、Amazon A+コンテンツにギフト用途訴求を8月末までに完了。</span>
+        </div>
+        <div class="action-item">
+          <span class="icon icon-both">共</span>
+          <span>秋冬需要（9月〜）に備え、<strong>8月末までに在庫調達計画を確定</strong>（月販目標80件×3ヶ月分）。</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>指標</th>
+            <th class="center">5月実績</th>
+            <th class="center">6月目標</th>
+            <th>主要施策</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Amazon 売上金額</td>
+            <td class="center">211,860円</td>
+            <td class="center highlight-positive">280,000円</td>
+            <td>SP予算回復・アクセス増加</td>
+          </tr>
+          <tr>
+            <td>Amazon アクセス数</td>
+            <td class="center">437人</td>
+            <td class="center highlight-positive">800人以上</td>
+            <td>SP広告増額・CTR改善</td>
+          </tr>
+          <tr>
+            <td>Amazon CVR</td>
+            <td class="center">13.04%</td>
+            <td class="center">11%以上維持</td>
+            <td>ページ品質維持</td>
+          </tr>
+          <tr>
+            <td>Amazon TACOS</td>
+            <td class="center highlight-positive">24.4%</td>
+            <td class="center">27%以内</td>
+            <td>入札精度の維持</td>
+          </tr>
+          <tr>
+            <td>楽天 売上金額</td>
+            <td class="center">17,920円</td>
+            <td class="center highlight-positive">100,000円以上</td>
+            <td>スーパーセール集中投資</td>
+          </tr>
+          <tr>
+            <td>楽天 ACOS</td>
+            <td class="center highlight-negative">77.6%</td>
+            <td class="center">30%以内</td>
+            <td>RPP絞り込み・セール限定運用</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- ===== SECTION 7: 施策効果グラフ ===== -->
+  <div class="section" id="施策">
+    <div class="section-title"><span class="num">7</span>施策効果グラフ（5月 広告入札調整）</div>
+
+    <!-- 施策タイムライン -->
+    <div class="施策-timeline">
+      <div class="施策-badge">
+        <div class="施策-dot" style="background:#e8630a;"></div>
+        <div>
+          <div class="施策-label">5/18〜 施策A：キーワード入札抑制</div>
+          <div class="施策-desc">単価高騰KWの入札を引き下げ調整</div>
+        </div>
+      </div>
+      <div class="施策-badge">
+        <div class="施策-dot" style="background:#bf0000;"></div>
+        <div>
+          <div class="施策-label">5/18〜 施策B：ASINターゲティング入札引き下げ</div>
+          <div class="施策-desc">ASIN別の入札を適正化</div>
+        </div>
+      </div>
+      <div class="施策-badge">
+        <div class="施策-dot" style="background:#1a7f4b;border:2px dashed #1a7f4b;background:transparent;"></div>
+        <div>
+          <div class="施策-label">5/27〜 セール開始（参考）</div>
+          <div class="施策-desc">価格2,980円へ変更・別要因のため施策比較から除外</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- チャート -->
+    <div class="chart-wrap">
+      <h3>5月 日次推移：CPC（円）＆ 売上数量（個）</h3>
+      <div class="chart-legend">
+        <span><span class="legend-line" style="background:#e8630a;"></span>CPC（円）[左軸]</span>
+        <span><span class="legend-line" style="background:rgba(26,127,75,0.6);height:10px;width:14px;display:inline-block;border-radius:2px;"></span>売上数量（個）[右軸]</span>
+        <span style="color:#e8630a;">｜　5/18 施策実施（破線）</span>
+        <span style="color:#888;">｜　5/27 セール開始（参考線）</span>
+      </div>
+      <div style="position:relative;height:300px;">
+        <canvas id="施策Chart"></canvas>
+      </div>
+      <div class="note" style="margin-top:8px;">※5/27〜5/31は価格を2,980円に変更したセール期間。施策効果の比較からは除外。</div>
+    </div>
+
+    <!-- Before / After カード -->
+    <div class="period-note">
+      比較期間：施策前 17日間（5/1〜5/17）→ 施策後 9日間（5/18〜5/26）｜※5/27〜5/31セール期間除外
+    </div>
+
+    <div class="ba-grid">
+      <div class="ba-card change-positive">
+        <div class="ba-label">CPC</div>
+        <div class="ba-before">101.3円/日</div>
+        <div class="ba-arrow">↓</div>
+        <div class="ba-after">88.2円/日</div>
+        <div class="ba-change">▼ −12.9%</div>
+      </div>
+      <div class="ba-card change-neutral">
+        <div class="ba-label">クリック数</div>
+        <div class="ba-before">15.8回/日</div>
+        <div class="ba-arrow">↓</div>
+        <div class="ba-after">13.1回/日</div>
+        <div class="ba-change">▼ −17.1%</div>
+      </div>
+      <div class="ba-card change-positive">
+        <div class="ba-label">日次広告費</div>
+        <div class="ba-before">1,613円/日</div>
+        <div class="ba-arrow">↓</div>
+        <div class="ba-after">1,157円/日</div>
+        <div class="ba-change">▼ −28.2%</div>
+      </div>
+      <div class="ba-card change-positive">
+        <div class="ba-label">日次売上数量</div>
+        <div class="ba-before">1.00個/日</div>
+        <div class="ba-arrow">↑</div>
+        <div class="ba-after">1.22個/日</div>
+        <div class="ba-change">▲ +22.0%</div>
+      </div>
+      <div class="ba-card change-positive">
+        <div class="ba-label">ROAS</div>
+        <div class="ba-before">277.6%</div>
+        <div class="ba-arrow">↑</div>
+        <div class="ba-after">473.2%</div>
+        <div class="ba-change">▲ +70.5%</div>
+      </div>
+    </div>
+
+    <div class="callout">
+      <strong>施策効果の総括：</strong>
+      5/18からのキーワード入札抑制・ASIN入札引き下げにより、CPC −13%・広告費 −28%を達成しながら日次売上数量は +22%・ROAS +70.5%と大幅改善。<strong>「高単価KWへの過剰入札が無駄クリックを生んでいた」</strong>ことが数値で裏付けられ、施策の方向性は正しかった。ただし5/27〜5/31のセール期間（価格2,980円）との効果分離が必要なため、6月正価期間での同指標追跡を継続して純粋な施策効果を確認すること。
+    </div>
+  </div>
+
+</div>
+
+<div class="footer">
+  BabyGoo｜ベビーバスローブ 販売分析レポート｜2026年3〜5月実績｜作成日 2026年6月4日
+</div>
+
+<script>
+// ── Chart.js 施策効果グラフ ────────────────────────────────
+const SAKUSEN_IDX = 17; // 5/18
+const SALE_IDX    = 26; // 5/27
+
+const chartLabels = [
+  '5/1','5/2','5/3','5/4','5/5','5/6','5/7','5/8','5/9','5/10',
+  '5/11','5/12','5/13','5/14','5/15','5/16','5/17','5/18','5/19','5/20',
+  '5/21','5/22','5/23','5/24','5/25','5/26','5/27','5/28','5/29','5/30','5/31'
+];
+
+const cpcData   = [115,133,124,117,89,100,77,102,109,100,91,93,98,92,88,99,95,87,83,94,90,81,91,88,102,78,129,87,87,91,93];
+const salesData = [2,3,0,2,0,1,0,0,3,3,0,2,1,0,0,0,0,1,0,2,2,0,1,2,1,2,8,6,3,4,8];
+
+// ── カスタムプラグイン（Chart.register ではなくチャート config の plugins 配列で渡す）
+
+// 背景ハイライト（施策後区間 5/18〜5/26）
+const bgHighlight = {
+  id: 'bgHighlight',
+  beforeDraw(chart) {
+    if (!chart.chartArea || !chart.scales.x) return;
+    const { ctx, chartArea: { top, bottom }, scales: { x } } = chart;
+    const x1 = x.getPixelForValue(SAKUSEN_IDX);
+    const x2 = x.getPixelForValue(SALE_IDX);
+    ctx.save();
+    ctx.fillStyle = 'rgba(232,99,10,0.06)';
+    ctx.fillRect(x1, top, x2 - x1, bottom - top);
+    ctx.restore();
+  }
+};
+
+// 垂直マーカーライン（施策日・セール開始日）
+const vLines = {
+  id: 'vLines',
+  afterDraw(chart) {
+    if (!chart.chartArea || !chart.scales.x) return;
+    const { ctx, chartArea: { top, bottom }, scales: { x } } = chart;
+
+    // 5/18 施策ライン（オレンジ破線）
+    const x1 = x.getPixelForValue(SAKUSEN_IDX);
+    ctx.save();
+    ctx.beginPath();
+    ctx.moveTo(x1, top);
+    ctx.lineTo(x1, bottom);
+    ctx.lineWidth = 2;
+    ctx.strokeStyle = '#e8630a';
+    ctx.setLineDash([6, 4]);
+    ctx.stroke();
+    ctx.setLineDash([]);
+    ctx.fillStyle = '#e8630a';
+    ctx.font = 'bold 10px sans-serif';
+    ctx.textAlign = 'left';
+    ctx.fillText('5/18 施策', x1 + 3, top + 14);
+    ctx.restore();
+
+    // 5/27 セールライン（グレー破線）
+    const x2 = x.getPixelForValue(SALE_IDX);
+    ctx.save();
+    ctx.beginPath();
+    ctx.moveTo(x2, top);
+    ctx.lineTo(x2, bottom);
+    ctx.lineWidth = 1.5;
+    ctx.strokeStyle = '#999';
+    ctx.setLineDash([4, 4]);
+    ctx.stroke();
+    ctx.setLineDash([]);
+    ctx.fillStyle = '#999';
+    ctx.font = '10px sans-serif';
+    ctx.textAlign = 'left';
+    ctx.fillText('5/27 セール', x2 + 3, top + 28);
+    ctx.restore();
+  }
+};
+
+// ── チャート生成
+const chartCanvas = document.getElementById('施策Chart'); // 施策Chart
+new Chart(chartCanvas, {
+  type: 'bar',                            // ← 必須: 最上位の type
+  plugins: [bgHighlight, vLines],         // ← カスタムプラグインはここで渡す
+  data: {
+    labels: chartLabels,
+    datasets: [
+      {
+        type: 'line',
+        label: 'CPC（円）',   // CPC（円）
+        data: cpcData,
+        borderColor: '#e8630a',
+        backgroundColor: 'rgba(232,99,10,0.1)',
+        tension: 0.35,
+        pointRadius: 3,
+        pointHoverRadius: 5,
+        borderWidth: 2,
+        yAxisID: 'yCPC',
+        order: 1
+      },
+      {
+        type: 'bar',
+        label: '売上数量（個）', // 売上数量（個）
+        data: salesData,
+        backgroundColor: salesData.map(function(_, i) {
+          return i >= SALE_IDX    ? 'rgba(26,127,75,0.85)' :
+                 i >= SAKUSEN_IDX ? 'rgba(46,125,209,0.65)' :
+                                    'rgba(46,125,209,0.3)';
+        }),
+        borderColor: salesData.map(function(_, i) {
+          return i >= SALE_IDX    ? '#1a7f4b' :
+                 i >= SAKUSEN_IDX ? '#2e7dd1' :
+                                    'rgba(46,125,209,0.5)';
+        }),
+        borderWidth: 1,
+        yAxisID: 'ySales',
+        order: 2
+      }
+    ]
+  },
+  options: {
+    responsive: true,
+    maintainAspectRatio: false,
+    interaction: { mode: 'index', intersect: false },
+    plugins: {
+      legend: {
+        position: 'top',
+        labels: { font: { size: 12 }, padding: 16 }
+      },
+      tooltip: {
+        callbacks: {
+          afterBody: function(items) {
+            var idx = items[0].dataIndex;
+            if (idx === SAKUSEN_IDX) return ['', '▶ 施策実施日（KW入札抑制・ASIN入札引き下げ）'];
+            if (idx === SALE_IDX)    return ['', '▶ セール価格2,980円に変更'];
+            return [];
+          }
+        }
+      }
+    },
+    scales: {
+      x: {
+        ticks: {
+          font: { size: 10 },
+          maxRotation: 45,
+          callback: function(val, idx) {
+            return idx % 3 === 0 ? chartLabels[idx] : '';
+          }
+        },
+        grid: { color: 'rgba(0,0,0,0.05)' }
+      },
+      yCPC: {
+        type: 'linear',
+        position: 'left',
+        title: { display: true, text: 'CPC（円）', font: { size: 11 }, color: '#e8630a' },
+        min: 50,
+        max: 150,
+        ticks: { font: { size: 11 }, color: '#e8630a' },
+        grid: { color: 'rgba(0,0,0,0.06)' }
+      },
+      ySales: {
+        type: 'linear',
+        position: 'right',
+        title: { display: true, text: '売上数量（個）', font: { size: 11 }, color: '#2e7dd1' },
+        min: 0,
+        max: 10,
+        ticks: { stepSize: 1, font: { size: 11 }, color: '#2e7dd1' },
+        grid: { drawOnChartArea: false }
+      }
+    }
+  }
+});
+</script>
+
+</body>
+</html>

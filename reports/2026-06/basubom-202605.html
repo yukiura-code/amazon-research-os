@@ -1,0 +1,1053 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>バスボム3商品 分析レポート 2026年3〜5月</title>
+  <style>
+    :root {
+      --primary: #1a2b4a;
+      --accent: #e8630a;
+      --accent2: #2e7dd1;
+      --bg: #f4f6f9;
+      --card: #ffffff;
+      --text: #1e2a3a;
+      --muted: #6b7a8d;
+      --border: #dde2ea;
+      --positive: #1a7f4b;
+      --negative: #c0392b;
+      --warn: #d4860a;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: 'Helvetica Neue', 'Noto Sans JP', Arial, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      font-size: 15px;
+      line-height: 1.6;
+    }
+
+    /* Header */
+    .header {
+      background: var(--primary);
+      color: #fff;
+      padding: 48px 48px 36px;
+    }
+    .header-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      flex-wrap: wrap;
+      gap: 16px;
+    }
+    .header h1 {
+      font-size: 26px;
+      font-weight: 700;
+      letter-spacing: 0.02em;
+      line-height: 1.35;
+    }
+    .header .subtitle {
+      margin-top: 8px;
+      font-size: 14px;
+      opacity: 0.75;
+    }
+    .header-meta {
+      text-align: right;
+      font-size: 13px;
+      opacity: 0.7;
+      line-height: 1.8;
+    }
+    .asin-badge {
+      display: inline-block;
+      margin-top: 12px;
+      padding: 4px 12px;
+      border: 1px solid rgba(255,255,255,0.35);
+      border-radius: 20px;
+      font-size: 12px;
+      letter-spacing: 0.05em;
+    }
+
+    /* Nav */
+    .nav {
+      background: #243558;
+      padding: 0 48px;
+      display: flex;
+      gap: 0;
+      overflow-x: auto;
+    }
+    .nav a {
+      color: rgba(255,255,255,0.65);
+      text-decoration: none;
+      padding: 14px 20px;
+      font-size: 13px;
+      white-space: nowrap;
+      border-bottom: 2px solid transparent;
+      transition: all 0.2s;
+    }
+    .nav a:hover { color: #fff; border-color: var(--accent); }
+
+    /* Main */
+    .main { max-width: 1100px; margin: 0 auto; padding: 40px 24px 80px; }
+
+    /* Section */
+    .section { margin-bottom: 56px; }
+    .section-title {
+      font-size: 18px;
+      font-weight: 700;
+      color: var(--primary);
+      padding-bottom: 10px;
+      border-bottom: 2px solid var(--accent);
+      margin-bottom: 24px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .section-title .num {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 28px;
+      height: 28px;
+      background: var(--accent);
+      color: #fff;
+      border-radius: 50%;
+      font-size: 14px;
+    }
+
+    /* KPI Cards */
+    .kpi-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: 16px;
+      margin-bottom: 32px;
+    }
+    .kpi-card {
+      background: var(--card);
+      border-radius: 10px;
+      padding: 20px 20px 16px;
+      box-shadow: 0 1px 4px rgba(0,0,0,0.07);
+      border-top: 3px solid var(--accent2);
+    }
+    .kpi-card.cake  { border-top-color: #e8630a; }
+    .kpi-card.donut { border-top-color: #bf0000; }
+    .kpi-card.ball  { border-top-color: #2e7dd1; }
+    .kpi-card.total { border-top-color: #1a7f4b; }
+    .kpi-card .label { font-size: 12px; color: var(--muted); margin-bottom: 6px; }
+    .kpi-card .value { font-size: 22px; font-weight: 700; color: var(--primary); }
+    .kpi-card .sub { font-size: 12px; color: var(--muted); margin-top: 4px; }
+
+    /* Table */
+    .table-wrap { overflow-x: auto; margin-bottom: 24px; }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 13.5px;
+      background: var(--card);
+      border-radius: 10px;
+      overflow: hidden;
+      box-shadow: 0 1px 4px rgba(0,0,0,0.07);
+    }
+    thead tr { background: var(--primary); color: #fff; }
+    thead th {
+      padding: 12px 14px;
+      text-align: left;
+      font-weight: 600;
+      font-size: 12.5px;
+      letter-spacing: 0.03em;
+      white-space: nowrap;
+    }
+    thead th.center { text-align: center; }
+    tbody tr { border-bottom: 1px solid var(--border); }
+    tbody tr:last-child { border-bottom: none; }
+    tbody tr:hover { background: #f8fafc; }
+    tbody td { padding: 11px 14px; vertical-align: middle; }
+    tbody td.right { text-align: right; font-variant-numeric: tabular-nums; }
+    tbody td.center { text-align: center; font-variant-numeric: tabular-nums; }
+    .row-header { font-weight: 600; background: #f0f3f8; color: var(--primary); font-size: 13px; }
+    .highlight-positive { color: var(--positive); font-weight: 700; }
+    .highlight-negative { color: var(--negative); font-weight: 700; }
+    .highlight-warn { color: var(--warn); font-weight: 700; }
+    .product-tag {
+      display: inline-block;
+      padding: 2px 9px;
+      border-radius: 4px;
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.04em;
+    }
+    .tag-cake  { background: #fff3e6; color: #b84c00; }
+    .tag-donut { background: #fff0f0; color: #a00000; }
+    .tag-ball  { background: #e8f0fe; color: #1a5db0; }
+    .tag-rakuten { background: #fff0f0; color: #a00000; }
+
+    /* Channel Compare */
+    .compare-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 20px;
+      margin-bottom: 24px;
+    }
+    @media(max-width: 600px){ .compare-grid { grid-template-columns: 1fr; } }
+    .compare-card {
+      background: var(--card);
+      border-radius: 10px;
+      padding: 24px;
+      box-shadow: 0 1px 4px rgba(0,0,0,0.07);
+    }
+    .compare-card h3 {
+      font-size: 15px;
+      font-weight: 700;
+      margin-bottom: 16px;
+      color: var(--primary);
+    }
+    .bar-row { margin-bottom: 12px; }
+    .bar-label { font-size: 12px; color: var(--muted); margin-bottom: 4px; display: flex; justify-content: space-between; }
+    .bar-track { height: 8px; background: var(--bg); border-radius: 4px; overflow: hidden; }
+    .bar-fill { height: 100%; border-radius: 4px; }
+    .bar-section-label { font-size: 11px; color: var(--muted); margin: 14px 0 8px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.06em; }
+
+    /* Insight Cards */
+    .insight-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 16px;
+      margin-bottom: 24px;
+    }
+    .insight-card {
+      background: var(--card);
+      border-radius: 10px;
+      padding: 20px 22px;
+      box-shadow: 0 1px 4px rgba(0,0,0,0.07);
+      border-left: 4px solid var(--accent2);
+    }
+    .insight-card.warn    { border-left-color: var(--warn); }
+    .insight-card.danger  { border-left-color: var(--negative); }
+    .insight-card.success { border-left-color: var(--positive); }
+    .insight-card h4 { font-size: 13.5px; font-weight: 700; margin-bottom: 8px; color: var(--primary); }
+    .insight-card p  { font-size: 13px; color: #4a5568; line-height: 1.65; }
+    .insight-card .metric { font-size: 18px; font-weight: 700; margin-bottom: 4px; }
+
+    /* Action Table */
+    .action-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 20px;
+      margin-bottom: 24px;
+    }
+    @media(max-width: 700px){ .action-grid { grid-template-columns: 1fr; } }
+    .action-block {
+      background: var(--card);
+      border-radius: 10px;
+      padding: 22px 24px;
+      box-shadow: 0 1px 4px rgba(0,0,0,0.07);
+    }
+    .action-block h3 {
+      font-size: 14px;
+      font-weight: 700;
+      margin-bottom: 14px;
+      color: var(--primary);
+      border-bottom: 1px solid var(--border);
+      padding-bottom: 10px;
+    }
+    .action-item {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 10px;
+      font-size: 13px;
+      line-height: 1.6;
+      color: #3a4a5a;
+    }
+    .action-item .icon {
+      flex-shrink: 0;
+      width: 20px;
+      height: 20px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 11px;
+      font-weight: 700;
+      margin-top: 2px;
+    }
+    .icon-rakuten { background: #fff0f0; color: #a00000; }
+    .icon-urgent  { background: #ffe8e8; color: #c0392b; }
+
+    /* Unit Econ */
+    .unit-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 20px;
+      margin-bottom: 24px;
+    }
+    @media(max-width: 600px){ .unit-grid { grid-template-columns: 1fr; } }
+    .unit-card {
+      background: var(--card);
+      border-radius: 10px;
+      padding: 22px 24px;
+      box-shadow: 0 1px 4px rgba(0,0,0,0.07);
+    }
+    .unit-card h3 { font-size: 14px; font-weight: 700; margin-bottom: 16px; color: var(--primary); }
+    .unit-row {
+      display: flex;
+      justify-content: space-between;
+      padding: 7px 0;
+      border-bottom: 1px solid var(--border);
+      font-size: 13px;
+    }
+    .unit-row:last-child { border-bottom: none; font-weight: 700; font-size: 14px; }
+    .unit-row .unit-label { color: var(--muted); }
+    .unit-row .unit-val { font-variant-numeric: tabular-nums; }
+    .profit-positive { color: var(--positive); }
+    .profit-negative { color: var(--negative); }
+
+    /* Customer Insight */
+    .ci-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 16px;
+      margin-bottom: 24px;
+    }
+    @media(max-width: 700px){ .ci-grid { grid-template-columns: 1fr; } }
+    .ci-card {
+      background: var(--card);
+      border-radius: 10px;
+      padding: 20px;
+      box-shadow: 0 1px 4px rgba(0,0,0,0.07);
+      text-align: center;
+    }
+    .ci-card .ci-icon { font-size: 28px; margin-bottom: 10px; }
+    .ci-card h4 { font-size: 13px; font-weight: 700; margin-bottom: 8px; color: var(--primary); }
+    .ci-card p  { font-size: 12.5px; color: #4a5568; line-height: 1.6; }
+
+    /* Footer */
+    .footer {
+      background: var(--primary);
+      color: rgba(255,255,255,0.5);
+      text-align: center;
+      padding: 24px;
+      font-size: 12px;
+    }
+
+    /* Callout */
+    .callout {
+      background: #fff8e6;
+      border: 1px solid #f5c842;
+      border-left: 4px solid #f5c842;
+      border-radius: 8px;
+      padding: 14px 18px;
+      font-size: 13px;
+      margin-bottom: 20px;
+      color: #5a4a00;
+    }
+    .callout strong { color: #3a3000; }
+
+    .note { font-size: 12px; color: var(--muted); margin-top: 8px; }
+
+    /* Product section spacer */
+    .product-section-gap { margin-top: 32px; }
+
+    /* KPI target table accent */
+    .kpi-target-table thead tr { background: #243558; }
+  </style>
+</head>
+<body>
+
+<!-- Header -->
+<div class="header">
+  <div class="header-top">
+    <div>
+      <div style="font-size:12px;opacity:0.6;margin-bottom:6px;letter-spacing:0.08em;">PRODUCT ANALYSIS REPORT</div>
+      <h1>バスボム3商品 販売分析レポート</h1>
+      <div class="subtitle">楽天市場｜対象期間：2026年3月〜5月</div>
+      <div class="asin-badge">fun34 / fun33 / bathbomb（各ssバリアント含む）</div>
+    </div>
+    <div class="header-meta">
+      <div>作成日：2026年6月5日</div>
+      <div>fungoo</div>
+    </div>
+  </div>
+</div>
+
+<!-- Nav -->
+<nav class="nav">
+  <a href="#summary">月次サマリー</a>
+  <a href="#channel">商品別比較</a>
+  <a href="#overview">モール別総括</a>
+  <a href="#unit">ユニットエコノミクス</a>
+  <a href="#insight">顧客インサイト</a>
+  <a href="#action">アクション案</a>
+</nav>
+
+<div class="main">
+
+  <!-- ===== SECTION 1: 月次サマリー比較 ===== -->
+  <div class="section" id="summary">
+    <div class="section-title"><span class="num">1</span>月次サマリー比較</div>
+
+    <div style="margin-bottom:16px;font-size:13px;color:var(--muted);">
+      <span class="product-tag tag-rakuten">楽天市場</span>&nbsp;
+      粗利はRPP広告費のみ控除。転換率＝アクセス人数→購入。ROAS・CVRは12時間帰属ウィンドウ。
+    </div>
+
+    <!-- バスボムケーキ -->
+    <div style="margin-bottom:8px;font-weight:700;font-size:14px;color:var(--primary);">
+      <span class="product-tag tag-cake">バスボムケーキ9個</span>&nbsp;fun34 / fun34ss
+    </div>
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>指標</th>
+            <th class="center">3月</th>
+            <th class="center">4月</th>
+            <th class="center">5月</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>売上点数</td>
+            <td class="center highlight-positive">203点</td>
+            <td class="center">111点</td>
+            <td class="center highlight-negative">73点</td>
+          </tr>
+          <tr>
+            <td>売上金額</td>
+            <td class="center highlight-positive">574,340円</td>
+            <td class="center">330,780円</td>
+            <td class="center highlight-negative">214,858円</td>
+          </tr>
+          <tr>
+            <td>アクセス人数</td>
+            <td class="center highlight-positive">3,814人</td>
+            <td class="center highlight-negative">1,607人</td>
+            <td class="center">1,557人</td>
+          </tr>
+          <tr>
+            <td>広告費（RPP）</td>
+            <td class="center highlight-negative">71,607円</td>
+            <td class="center">17,796円</td>
+            <td class="center highlight-positive">13,522円</td>
+          </tr>
+          <tr>
+            <td>CTR（RPP）</td>
+            <td class="center highlight-positive">16.6%</td>
+            <td class="center highlight-negative">7.0%</td>
+            <td class="center">8.0%</td>
+          </tr>
+          <tr>
+            <td>CPC実績</td>
+            <td class="center highlight-negative">38円</td>
+            <td class="center">32円</td>
+            <td class="center highlight-positive">19円</td>
+          </tr>
+          <tr>
+            <td>転換率（全体）</td>
+            <td class="center">5.32%</td>
+            <td class="center highlight-positive">6.91%</td>
+            <td class="center highlight-negative">4.69%</td>
+          </tr>
+          <tr>
+            <td>ROAS（12時間）</td>
+            <td class="center highlight-positive">3.44x</td>
+            <td class="center">2.68x</td>
+            <td class="center highlight-negative">0.88x</td>
+          </tr>
+          <tr>
+            <td>ACOS</td>
+            <td class="center highlight-positive">29.0%</td>
+            <td class="center highlight-warn">37.3%</td>
+            <td class="center highlight-negative">113.4%</td>
+          </tr>
+          <tr>
+            <td>TACOS</td>
+            <td class="center highlight-negative">12.5%</td>
+            <td class="center highlight-positive">5.4%</td>
+            <td class="center">6.3%</td>
+          </tr>
+          <tr>
+            <td>粗利（RPP差引）</td>
+            <td class="center highlight-positive">502,733円</td>
+            <td class="center">312,984円</td>
+            <td class="center highlight-negative">201,336円</td>
+          </tr>
+          <tr>
+            <td>利益率</td>
+            <td class="center highlight-negative">87.5%</td>
+            <td class="center highlight-positive">94.6%</td>
+            <td class="center">93.7%</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- バスボムドーナツ -->
+    <div class="product-section-gap" style="margin-bottom:8px;font-weight:700;font-size:14px;color:var(--primary);">
+      <span class="product-tag tag-donut">バスボムドーナツ9個</span>&nbsp;fun33 / fun33ss
+    </div>
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>指標</th>
+            <th class="center">3月</th>
+            <th class="center">4月</th>
+            <th class="center">5月</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>売上点数</td>
+            <td class="center highlight-positive">316点</td>
+            <td class="center">62点</td>
+            <td class="center highlight-negative">39点</td>
+          </tr>
+          <tr>
+            <td>売上金額</td>
+            <td class="center highlight-positive">897,580円</td>
+            <td class="center">184,760円</td>
+            <td class="center highlight-negative">113,538円</td>
+          </tr>
+          <tr>
+            <td>アクセス人数</td>
+            <td class="center highlight-positive">4,258人</td>
+            <td class="center">1,508人</td>
+            <td class="center highlight-negative">1,393人</td>
+          </tr>
+          <tr>
+            <td>広告費（RPP）</td>
+            <td class="center highlight-negative">47,419円</td>
+            <td class="center highlight-positive">9,695円</td>
+            <td class="center">12,825円</td>
+          </tr>
+          <tr>
+            <td>CPC実績</td>
+            <td class="center highlight-negative">28円</td>
+            <td class="center highlight-positive">18円</td>
+            <td class="center highlight-positive">18円</td>
+          </tr>
+          <tr>
+            <td>転換率（全体）</td>
+            <td class="center highlight-positive">7.42%</td>
+            <td class="center">4.11%</td>
+            <td class="center highlight-negative">2.80%</td>
+          </tr>
+          <tr>
+            <td>ROAS（12時間）</td>
+            <td class="center highlight-positive">3.16x</td>
+            <td class="center highlight-negative">1.54x</td>
+            <td class="center">1.79x</td>
+          </tr>
+          <tr>
+            <td>ACOS</td>
+            <td class="center highlight-positive">31.6%</td>
+            <td class="center highlight-negative">65.1%</td>
+            <td class="center highlight-warn">55.9%</td>
+          </tr>
+          <tr>
+            <td>TACOS</td>
+            <td class="center highlight-positive">5.3%</td>
+            <td class="center highlight-positive">5.3%</td>
+            <td class="center highlight-negative">11.3%</td>
+          </tr>
+          <tr>
+            <td>粗利（RPP差引）</td>
+            <td class="center highlight-positive">850,161円</td>
+            <td class="center">175,065円</td>
+            <td class="center highlight-negative">100,713円</td>
+          </tr>
+          <tr>
+            <td>利益率</td>
+            <td class="center">94.7%</td>
+            <td class="center highlight-positive">94.8%</td>
+            <td class="center highlight-negative">88.7%</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- バスボムボール -->
+    <div class="product-section-gap" style="margin-bottom:8px;font-weight:700;font-size:14px;color:var(--primary);">
+      <span class="product-tag tag-ball">バスボムボール12個</span>&nbsp;bathbomb / bathbombss
+    </div>
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>指標</th>
+            <th class="center">3月</th>
+            <th class="center">4月</th>
+            <th class="center">5月</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>売上点数</td>
+            <td class="center highlight-positive">94点</td>
+            <td class="center">36点</td>
+            <td class="center highlight-negative">34点</td>
+          </tr>
+          <tr>
+            <td>売上金額</td>
+            <td class="center highlight-positive">260,920円</td>
+            <td class="center">107,280円</td>
+            <td class="center highlight-negative">99,234円</td>
+          </tr>
+          <tr>
+            <td>アクセス人数</td>
+            <td class="center highlight-positive">2,726人</td>
+            <td class="center highlight-negative">908人</td>
+            <td class="center">1,057人</td>
+          </tr>
+          <tr>
+            <td>広告費（RPP）</td>
+            <td class="center highlight-negative">38,222円</td>
+            <td class="center highlight-positive">5,190円</td>
+            <td class="center">11,476円</td>
+          </tr>
+          <tr>
+            <td>CPC実績</td>
+            <td class="center highlight-negative">26円</td>
+            <td class="center highlight-positive">17円</td>
+            <td class="center">18円</td>
+          </tr>
+          <tr>
+            <td>転換率（全体）</td>
+            <td class="center">3.45%</td>
+            <td class="center highlight-positive">3.96%</td>
+            <td class="center highlight-negative">3.22%</td>
+          </tr>
+          <tr>
+            <td>ROAS（12時間）</td>
+            <td class="center">2.10x</td>
+            <td class="center highlight-positive">4.02x</td>
+            <td class="center highlight-negative">0.88x</td>
+          </tr>
+          <tr>
+            <td>ACOS</td>
+            <td class="center highlight-warn">47.7%</td>
+            <td class="center highlight-positive">24.9%</td>
+            <td class="center highlight-negative">77.0%</td>
+          </tr>
+          <tr>
+            <td>TACOS</td>
+            <td class="center highlight-warn">14.6%</td>
+            <td class="center highlight-positive">4.8%</td>
+            <td class="center">11.6%</td>
+          </tr>
+          <tr>
+            <td>粗利（RPP差引）</td>
+            <td class="center highlight-positive">222,698円</td>
+            <td class="center">102,090円</td>
+            <td class="center highlight-negative">87,758円</td>
+          </tr>
+          <tr>
+            <td>利益率</td>
+            <td class="center highlight-negative">85.4%</td>
+            <td class="center highlight-positive">95.2%</td>
+            <td class="center">88.4%</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="note">※楽天の粗利はRPP広告費のみ控除（仕入・送料・プラットフォーム手数料は非計上）</div>
+  </div>
+
+  <!-- ===== SECTION 2: 商品別比較（チャネル構成） ===== -->
+  <div class="section" id="channel">
+    <div class="section-title"><span class="num">2</span>商品別比較（3〜5月累計）</div>
+
+    <div class="kpi-grid">
+      <div class="kpi-card donut">
+        <div class="label">バスボムドーナツ 累計売上</div>
+        <div class="value">1,195,878円</div>
+        <div class="sub">構成比 43.0%｜417点</div>
+      </div>
+      <div class="kpi-card cake">
+        <div class="label">バスボムケーキ 累計売上</div>
+        <div class="value">1,119,978円</div>
+        <div class="sub">構成比 40.2%｜387点</div>
+      </div>
+      <div class="kpi-card ball">
+        <div class="label">バスボムボール 累計売上</div>
+        <div class="value">467,434円</div>
+        <div class="sub">構成比 16.8%｜164点</div>
+      </div>
+      <div class="kpi-card total">
+        <div class="label">3商品 合計売上</div>
+        <div class="value">2,783,290円</div>
+        <div class="sub">3ヶ月合計｜968点｜広告費227,752円</div>
+      </div>
+    </div>
+
+    <div class="compare-grid">
+      <div class="compare-card">
+        <h3>売上金額 月次推移</h3>
+        <div class="bar-section-label">バスボムドーナツ</div>
+        <div class="bar-row">
+          <div class="bar-label"><span>3月</span><span>897,580円</span></div>
+          <div class="bar-track"><div class="bar-fill" style="width:100%;background:#bf0000;"></div></div>
+        </div>
+        <div class="bar-row">
+          <div class="bar-label"><span>4月</span><span>184,760円</span></div>
+          <div class="bar-track"><div class="bar-fill" style="width:21%;background:#bf0000;"></div></div>
+        </div>
+        <div class="bar-row">
+          <div class="bar-label"><span>5月</span><span>113,538円</span></div>
+          <div class="bar-track"><div class="bar-fill" style="width:13%;background:#bf0000;"></div></div>
+        </div>
+        <div class="bar-section-label">バスボムケーキ</div>
+        <div class="bar-row">
+          <div class="bar-label"><span>3月</span><span>574,340円</span></div>
+          <div class="bar-track"><div class="bar-fill" style="width:64%;background:#e8630a;"></div></div>
+        </div>
+        <div class="bar-row">
+          <div class="bar-label"><span>4月</span><span>330,780円</span></div>
+          <div class="bar-track"><div class="bar-fill" style="width:37%;background:#e8630a;"></div></div>
+        </div>
+        <div class="bar-row">
+          <div class="bar-label"><span>5月</span><span>214,858円</span></div>
+          <div class="bar-track"><div class="bar-fill" style="width:24%;background:#e8630a;"></div></div>
+        </div>
+        <div class="bar-section-label">バスボムボール</div>
+        <div class="bar-row">
+          <div class="bar-label"><span>3月</span><span>260,920円</span></div>
+          <div class="bar-track"><div class="bar-fill" style="width:29%;background:#2e7dd1;"></div></div>
+        </div>
+        <div class="bar-row">
+          <div class="bar-label"><span>4月</span><span>107,280円</span></div>
+          <div class="bar-track"><div class="bar-fill" style="width:12%;background:#2e7dd1;"></div></div>
+        </div>
+        <div class="bar-row">
+          <div class="bar-label"><span>5月</span><span>99,234円</span></div>
+          <div class="bar-track"><div class="bar-fill" style="width:11%;background:#2e7dd1;"></div></div>
+        </div>
+        <div class="note" style="margin-top:10px;">※バー幅はドーナツ3月（897,580円）=100%基準</div>
+      </div>
+
+      <div class="compare-card">
+        <h3>転換率 月次推移</h3>
+        <div class="bar-section-label">バスボムドーナツ</div>
+        <div class="bar-row">
+          <div class="bar-label"><span>3月</span><span>7.42% ◀ 最高</span></div>
+          <div class="bar-track"><div class="bar-fill" style="width:100%;background:#1a7f4b;"></div></div>
+        </div>
+        <div class="bar-row">
+          <div class="bar-label"><span>4月</span><span>4.11%</span></div>
+          <div class="bar-track"><div class="bar-fill" style="width:55%;background:#bf0000;"></div></div>
+        </div>
+        <div class="bar-row">
+          <div class="bar-label"><span>5月</span><span>2.80% ◀ 最低</span></div>
+          <div class="bar-track"><div class="bar-fill" style="width:38%;background:#c0392b;"></div></div>
+        </div>
+        <div class="bar-section-label">バスボムケーキ</div>
+        <div class="bar-row">
+          <div class="bar-label"><span>3月</span><span>5.32%</span></div>
+          <div class="bar-track"><div class="bar-fill" style="width:72%;background:#e8630a;"></div></div>
+        </div>
+        <div class="bar-row">
+          <div class="bar-label"><span>4月</span><span>6.91%</span></div>
+          <div class="bar-track"><div class="bar-fill" style="width:93%;background:#1a7f4b;"></div></div>
+        </div>
+        <div class="bar-row">
+          <div class="bar-label"><span>5月</span><span>4.69%</span></div>
+          <div class="bar-track"><div class="bar-fill" style="width:63%;background:#e8630a;"></div></div>
+        </div>
+        <div class="bar-section-label">バスボムボール</div>
+        <div class="bar-row">
+          <div class="bar-label"><span>3月</span><span>3.45%</span></div>
+          <div class="bar-track"><div class="bar-fill" style="width:46%;background:#2e7dd1;"></div></div>
+        </div>
+        <div class="bar-row">
+          <div class="bar-label"><span>4月</span><span>3.96%</span></div>
+          <div class="bar-track"><div class="bar-fill" style="width:53%;background:#2e7dd1;"></div></div>
+        </div>
+        <div class="bar-row">
+          <div class="bar-label"><span>5月</span><span>3.22%</span></div>
+          <div class="bar-track"><div class="bar-fill" style="width:43%;background:#2e7dd1;"></div></div>
+        </div>
+        <div class="note" style="margin-top:10px;">※バー幅はドーナツ3月（7.42%）=100%基準</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== SECTION 3: モール別総括 ===== -->
+  <div class="section" id="overview">
+    <div class="section-title"><span class="num">3</span>モール別総括</div>
+
+    <div class="insight-grid">
+      <div class="insight-card success">
+        <h4>楽天｜ドーナツ3月：圧倒的な商品力を実証</h4>
+        <p>3月スーパーセール（3/4〜）でドーナツが<strong>転換率7.42%・売上897,580円</strong>を達成。オーガニック比率83.3%・TACOS 5.3%と広告効率も最優秀で、3商品中でも際立った商品力を示す。ケーキも3月に574,340円を記録し、セール期の3商品合計は1,732,840円を突破。</p>
+      </div>
+      <div class="insight-card warn">
+        <h4>楽天｜ケーキ：4月転換率6.91%が示すセール外需要</h4>
+        <p>セール後の4月でも転換率6.91%（3ヶ月中最高）を維持。アクセス数は3月の42%に落ちているにもかかわらず高転換率を記録しており、<strong>コアな指名購買層が定着</strong>していることを示す。ただし5月に転換率4.69%・ROAS 0.88xへ反落しており、需要維持のための施策が必要。</p>
+      </div>
+      <div class="insight-card danger">
+        <h4>楽天｜全商品：5月RPP広告が採算割れ圏</h4>
+        <p>5月のACOSはケーキ<strong>113.4%・ドーナツ55.9%・ボール77.0%</strong>とすべて50%超。ROAS（12時間）もケーキ・ボールで0.88xと採算割れラインを割り込んだ。5月の閑散期に通常月と同レベルでRPPを継続したことが損益を圧迫しており、イベント連動型の入稿制御への切り替えが急務。</p>
+      </div>
+      <div class="insight-card">
+        <h4>楽天｜ボール：安定した転換率と4月の広告効率</h4>
+        <p>転換率が3.22〜3.96%と3ヶ月を通じて最も安定。広告費を5,190円まで絞った<strong>4月にROAS 4.02x・ACOS 24.9%</strong>を達成し、3商品通じて最良の広告効率を記録。セールに頼らない定常需要の存在を示しており、ssバリアントのRPP入稿テストを継続する価値がある。</p>
+      </div>
+    </div>
+
+    <div class="callout">
+      <strong>直近（6月1〜5日）速報 ＆ 今後の示唆：</strong>
+      ドーナツ3件（8,640円）・ボール1件（2,680円）と低調スタートだが、<strong>6月4日〜楽天スーパーSALEが開幕</strong>しており現在がセール最中。3月スーパーセールの実績（ドーナツ897,580円・ケーキ574,340円）を踏まえると、本SALEで週50〜80万円超が射程圏内。セール価格設定・RPP入稿増・バナーのセール訴求切り替えを即座に確認すること。6月19日〜の後半マラソンに向けたクーポン設定も6月15日までに完了させること。
+    </div>
+  </div>
+
+  <!-- ===== SECTION 4: ユニットエコノミクス ===== -->
+  <div class="section" id="unit">
+    <div class="section-title"><span class="num">4</span>ユニットエコノミクス（1個あたり採算）</div>
+
+    <div style="margin-bottom:12px;font-size:13px;color:var(--muted);">
+      基準：バスボムケーキ9個（fun34）。仕入れ原価・送料・保管費はCSV行ラベル記載値。楽天手数料は概算10%。
+    </div>
+
+    <div class="unit-grid">
+      <div class="unit-card">
+        <h3>正価 ¥2,980（通常期推奨）</h3>
+        <div class="unit-row">
+          <span class="unit-label">販売金額</span>
+          <span class="unit-val">2,980円</span>
+        </div>
+        <div class="unit-row">
+          <span class="unit-label">仕入れ原価</span>
+          <span class="unit-val">▲ 900円</span>
+        </div>
+        <div class="unit-row">
+          <span class="unit-label">梱包・送料費</span>
+          <span class="unit-val">▲ 506円</span>
+        </div>
+        <div class="unit-row">
+          <span class="unit-label">在庫保管費</span>
+          <span class="unit-val">▲ 34円</span>
+        </div>
+        <div class="unit-row">
+          <span class="unit-label">楽天手数料（概算10%）</span>
+          <span class="unit-val">▲ 298円</span>
+        </div>
+        <div class="unit-row">
+          <span class="unit-label">広告費（TACOS 6%想定）</span>
+          <span class="unit-val">▲ 179円</span>
+        </div>
+        <div class="unit-row">
+          <span class="unit-label profit-positive">1個あたり推定粗利</span>
+          <span class="unit-val profit-positive"><strong>1,063円（35.7%）</strong></span>
+        </div>
+      </div>
+      <div class="unit-card">
+        <h3>セール価格 ¥2,680（スーパーSALE期）</h3>
+        <div class="unit-row">
+          <span class="unit-label">販売金額</span>
+          <span class="unit-val">2,680円</span>
+        </div>
+        <div class="unit-row">
+          <span class="unit-label">仕入れ原価</span>
+          <span class="unit-val">▲ 900円</span>
+        </div>
+        <div class="unit-row">
+          <span class="unit-label">梱包・送料費</span>
+          <span class="unit-val">▲ 506円</span>
+        </div>
+        <div class="unit-row">
+          <span class="unit-label">在庫保管費</span>
+          <span class="unit-val">▲ 34円</span>
+        </div>
+        <div class="unit-row">
+          <span class="unit-label">楽天手数料（概算10%）</span>
+          <span class="unit-val">▲ 268円</span>
+        </div>
+        <div class="unit-row">
+          <span class="unit-label">広告費（TACOS 13%想定）</span>
+          <span class="unit-val">▲ 348円</span>
+        </div>
+        <div class="unit-row">
+          <span class="unit-label profit-positive">1個あたり推定粗利</span>
+          <span class="unit-val profit-positive"><strong>624円（23.3%）</strong></span>
+        </div>
+      </div>
+    </div>
+
+    <div class="callout">
+      <strong>価格インパクト：</strong>正価（¥2,980）はセール価格（¥2,680）比で<strong>1個あたり粗利が約1.7倍（439円差）</strong>。3月のような大型セールは数量で損益を補填できるが、閑散期（4〜5月）の安易な値下げは採算を23%以下に圧縮するリスクがある。正価維持＋クーポン配布でセール感を演出し、常時値下げを避けること。
+    </div>
+  </div>
+
+  <!-- ===== SECTION 5: 顧客インサイト ===== -->
+  <div class="section" id="insight">
+    <div class="section-title"><span class="num">5</span>顧客インサイト × マーケ観点</div>
+
+    <div class="ci-grid">
+      <div class="ci-card">
+        <div class="ci-icon">🎁</div>
+        <h4>購買ターゲット</h4>
+        <p>主な購買層は<strong>ギフト・プレゼント目的</strong>の購入者。バスボムは季節イベント（誕生日・入学・バレンタイン等）のプチギフト需要が強く、楽天スーパーセール・マラソン時に購買が集中。3月のドーナツ転換率7.42%は通常月比2〜3倍を示す。</p>
+      </div>
+      <div class="ci-card">
+        <div class="ci-icon">🛒</div>
+        <h4>楽天ユーザーの特性</h4>
+        <p>転換率3〜7%はポイント目的よりも<strong>商品購買意図が明確な層</strong>が主体。ただしセール外月（4〜5月）のドーナツ転換率2.80%への低下は「セール限定買い」の比率が高いことを示す。ポイント10倍等の訴求でセール感を演出する施策が有効。</p>
+      </div>
+      <div class="ci-card">
+        <div class="ci-icon">📦</div>
+        <h4>ssバリアントの潜在需要</h4>
+        <p>5月にドーナツss 23件・ケーキss 12件が発生。セール期以外でも<strong>「少し安いセット版」を求める需要</strong>が存在する。ssバリアントのRPP入稿テストは継続的に実施し、マラソン期間中の入稿強化で追加収益を狙える。</p>
+      </div>
+      <div class="ci-card">
+        <div class="ci-icon">📅</div>
+        <h4>季節性リスクとサイクル</h4>
+        <p>4〜5月の閑散期（ドーナツ売上が3月比87%減）は梅雨・初夏のバスボム需要低下と「3月セール購買者のリピートサイクル未到達」の複合要因。<strong>次のピークは6月スーパーSALEと9〜10月秋冬需要</strong>。季節に合わせたRPP予算配分が必要。</p>
+      </div>
+      <div class="ci-card">
+        <div class="ci-icon">🔄</div>
+        <h4>オーガニック比率の推移</h4>
+        <p>ケーキのオーガニック売上比率が3月57%→4月86%→5月95%と回復。広告費を絞った後もオーガニック需要が残存しており、<strong>SEO評価が蓄積されている証拠</strong>。RPP入稿なしでもある程度の自然売上が見込めるため、閑散期のRPP完全停止も選択肢。</p>
+      </div>
+      <div class="ci-card">
+        <div class="ci-icon">📊</div>
+        <h4>チャネル最適化の方向性</h4>
+        <p><strong>イベント集中型</strong>へのシフトが最適解。スーパーSALE・マラソン期間（年間10〜12回）に絞ってRPP予算を集中投下し、通常期はオーガニックで維持。特にドーナツは通常期でも転換率2〜4%台が見込めるため、セール以外の最低限の入稿は維持すべき。</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== SECTION 6: アクション案 ===== -->
+  <div class="section" id="action">
+    <div class="section-title"><span class="num">6</span>アクション案</div>
+
+    <div class="table-wrap" style="margin-bottom:24px;">
+      <table>
+        <thead>
+          <tr>
+            <th style="width:130px;">軸</th>
+            <th><span class="product-tag tag-cake">ケーキ</span> &amp; <span class="product-tag tag-donut">ドーナツ</span></th>
+            <th><span class="product-tag tag-ball">ボール</span></th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td class="row-header">価格戦略</td>
+            <td>セール時のみ¥2,680に設定。正価¥2,980を基本維持。閑散期の常時値下げは禁止（粗利23%以下）。</td>
+            <td>正価¥2,980維持。ssバリアント割引は継続。まとめ買い訴求でAOV向上を狙う。</td>
+          </tr>
+          <tr>
+            <td class="row-header">広告</td>
+            <td>スーパーSALE期：RPP入稿額を通常月比3〜5倍に増額。ACOS>80%月は入稿一時停止。目標TACOS 10%以内。</td>
+            <td>マラソン3日前にRPP再開。ss SKUのRPP入稿テスト継続（月間予算5,000〜10,000円）。TACOS目標10%以内。</td>
+          </tr>
+          <tr>
+            <td class="row-header">CVR改善</td>
+            <td>スーパーSALEバナー・セール価格訴求画像への切り替え。ドーナツのレビュー数強化（現状不明・確認要）。</td>
+            <td>「まとめ買いでお得」訴求の導線をトップ画像に追加。他商品とのセット表示を商品説明に追加。</td>
+          </tr>
+          <tr>
+            <td class="row-header">イベント対応</td>
+            <td>6/4〜スーパーSALE：今すぐRPP入稿額・セール価格・バナーを確認。6/15までに後半マラソン（6/19〜）用クーポン設定完了。</td>
+            <td>6/19マラソン向けにまとめ買いクーポン（カート5%〜10%割引）を6/15までに準備。</td>
+          </tr>
+          <tr>
+            <td class="row-header">横断施策</td>
+            <td colspan="2" style="color:#3a4a5a;">ssバリアントのRPP入稿テスト全商品展開（5月ドーナツss 23件の実績を参考に）。3商品ページにレシプロカルリンク（「こちらもおすすめ」）を追加しクロスセルを強化。</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="action-grid">
+      <div class="action-block">
+        <h3>優先アクション（6月）</h3>
+        <div class="action-item">
+          <span class="icon icon-urgent">!</span>
+          <span><strong>【楽天・緊急】スーパーSALE期間（〜6月11日頃）</strong>：3商品のRPP入稿金額を通常月比3〜5倍に引き上げ。目標ROAS 3.0x以上・TACOS 10%以内。セール価格（¥2,680）適用とバナー切り替えを今日中に確認。</span>
+        </div>
+        <div class="action-item">
+          <span class="icon icon-rakuten">R</span>
+          <span><strong>【楽天・今週中】</strong>ドーナツ・ボールの5月ACOS改善（55〜77%）：ROAS 1.0x未満のRPPキーワードを一時停止し、高効率KWに予算集中。</span>
+        </div>
+        <div class="action-item">
+          <span class="icon icon-rakuten">R</span>
+          <span><strong>【楽天・6/15まで】</strong>6月後半マラソン（6/19〜）向け準備：クーポン設定（カート10%割引）・ssバリアントRPP入稿テスト開始・スーパーSALE結果のTACOS検証。</span>
+        </div>
+      </div>
+      <div class="action-block">
+        <h3>中期アクション（7〜9月）</h3>
+        <div class="action-item">
+          <span class="icon icon-rakuten">R</span>
+          <span><strong>7月マラソン</strong>（7月後半予定）に向け、マラソン専用クーポン＋RPP増額を7月15日までに準備。TACOS目標10%以内・ACOS目標50%以内。</span>
+        </div>
+        <div class="action-item">
+          <span class="icon icon-rakuten">R</span>
+          <span>7〜8月の閑散期（需要低期）はRPP予算を抑制し、オーガニック維持に切り替え。通常期TACOS 6〜8%ラインを目安に入稿額調整。</span>
+        </div>
+        <div class="action-item">
+          <span class="icon icon-rakuten">R</span>
+          <span><strong>9〜10月の秋冬需要復活期</strong>に向け、8月末までに在庫補充計画を確定。3商品の月販ピーク実績（3月計613点）×季節係数0.6で秋冬発注量を算出。</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- KPI目標表 -->
+    <div class="table-wrap">
+      <table class="kpi-target-table">
+        <thead>
+          <tr>
+            <th>指標</th>
+            <th class="center">5月実績</th>
+            <th class="center">6月目標</th>
+            <th>主要施策</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>3商品 合計売上</td>
+            <td class="center">427,630円</td>
+            <td class="center highlight-positive">800,000円以上</td>
+            <td>スーパーSALE期RPP増額・セール価格設定</td>
+          </tr>
+          <tr>
+            <td>ケーキ ACOS</td>
+            <td class="center highlight-negative">113.4%</td>
+            <td class="center highlight-positive">&lt; 50%</td>
+            <td>RPP入稿見直し・ROAS基準での入稿制御</td>
+          </tr>
+          <tr>
+            <td>ドーナツ ACOS</td>
+            <td class="center highlight-warn">55.9%</td>
+            <td class="center highlight-positive">&lt; 40%</td>
+            <td>高ROASキーワードへの予算集中</td>
+          </tr>
+          <tr>
+            <td>ボール ACOS</td>
+            <td class="center highlight-negative">77.0%</td>
+            <td class="center highlight-positive">&lt; 50%</td>
+            <td>マラソン前後のみ入稿・通常期抑制</td>
+          </tr>
+          <tr>
+            <td>3商品平均 TACOS</td>
+            <td class="center highlight-warn">9.7%</td>
+            <td class="center highlight-positive">&lt; 10%</td>
+            <td>入稿予算の最適化・イベント連動型制御</td>
+          </tr>
+          <tr>
+            <td>ドーナツ 転換率</td>
+            <td class="center highlight-negative">2.80%</td>
+            <td class="center highlight-positive">5.0%以上</td>
+            <td>スーパーSALEによる需要喚起</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+</div>
+
+<div class="footer">
+  fungoo｜バスボム3商品（ケーキ / ドーナツ / ボール）分析レポート｜楽天市場 2026年3〜5月実績｜作成日 2026年6月5日
+</div>
+
+</body>
+</html>

@@ -198,23 +198,165 @@ const REPORTS = [
     tags: ["Amazon重点", "価格戦略", "新規商品", "ギフト需要"],
     file: "2026-06/babyrobe.html"
   }
+  ,{
+    id:        "silicone-wrap-series-202606",
+    createdAt: "2026-06-15",
+    period:    "2026年3〜6月（6月10日まで）",
+    product:   "シリコンラップシリーズ",
+    category:  "キッチン用品",
+    brand:     "fungoo®",
+    asin:      "fun12 / fun15",
+    platforms: ["楽天"],
+    summary:   "fun12（10点セット）が累計¥206万（68%）を占める主力。4月3マラソン連続でCVR 8.66%・TACOS 3.66%の最高効率を達成。6月スーパーセールで fun12 CVR 9.67%（全期間最高）。fun15ss が5月に TACOS 18.15%まで急騰した広告機能不全を検出し対応必要。",
+    kpi: [
+      { label: "シリーズ累計売上",  value: "301万円",  good: true  },
+      { label: "fun12 CVR（6月）",  value: "9.67%",   good: true  },
+      { label: "fun12 TACOS（4月）", value: "3.66%",  good: true  },
+      { label: "fun15 TACOS（5月）", value: "18.15%", good: false }
+    ],
+    tags: ["楽天重点", "マラソン対応", "SKU最適化", "RPP効率"],
+    file: "2026-06/silicone-wrap-series-202606.html"
+  }
+  ,{
+    id:        "portfolio-202606",
+    createdAt: "2026-06-15",
+    period:    "2026年6月（1〜14日）",
+    product:   "全商品ポートフォリオ",
+    category:  "全カテゴリ",
+    brand:     "BabyGoo / fungoo®",
+    asin:      "31商品",
+    platforms: ["Amazon", "楽天"],
+    summary:   "31商品全体の6月1〜14日レポート。Amazon＋楽天合算売上¥6,172万・楽天RPP ROAS 1,341%。ベビーサークル・ベビー食器7点・電動搾乳機の3商品で採算警告あり。ポートフォリオ全体のROAS把握と要対応3商品の広告最適化が急務。",
+    kpi: [
+      { label: "全社合算売上（14日）", value: "6,172万円", good: true  },
+      { label: "楽天 RPP ROAS",       value: "1,341%",    good: true  },
+      { label: "RPP広告費",           value: "460万円",   good: false },
+      { label: "要対応商品",          value: "3商品",     good: false }
+    ],
+    tags: ["全商品", "ポートフォリオ", "緊急対応", "Amazon+楽天"],
+    file: "2026-06/portfolio-202606.html"
+  }
+  ,{
+    id:        "silicone-wrap-202605",
+    createdAt: "2026-06-01",
+    period:    "2026年3〜5月",
+    product:   "シリコンラップシリーズ",
+    category:  "キッチン用品",
+    brand:     "fungoo®",
+    asin:      "fun12 / fun15",
+    platforms: ["楽天"],
+    summary:   "fun12（10点セット）とfun15（6点セット）の楽天3〜5月分析。4月の3マラソン連続でfun12 ¥1,129,680・CVR 8.66%・TACOS 3.66%（期間最高効率）を達成。5月のfun15ss広告効率低下を含む。",
+    kpi: [
+      { label: "fun12 4月売上",      value: "112万円",  good: true  },
+      { label: "fun12 4月 TACOS",    value: "3.66%",   good: true  },
+      { label: "fun15 5月 TACOS",    value: "18.15%",  good: false },
+      { label: "fun12 5月 CVR",      value: "6.14%",   good: false }
+    ],
+    tags: ["楽天", "マラソン", "RPP最適化", "3〜5月"],
+    file: "2026-06/silicone-wrap-202605.html"
+  }
+  ,{
+    id:        "basubom-202605",
+    createdAt: "2026-06-01",
+    period:    "2026年3〜5月",
+    product:   "バスボム3商品",
+    category:  "入浴剤・バスボム",
+    brand:     "fungoo®",
+    asin:      "fun33 / fun34 / bathbombflower",
+    platforms: ["Amazon"],
+    summary:   "バスボム ドーナツ9個（fun33）・ケーキ9個（fun34）・フラワーセット（bathbombflower）の3〜5月分析。ギフト需要中心でAmazonでの販売実績を把握。",
+    kpi: [
+      { label: "対象SKU数",    value: "3商品",    good: true  },
+      { label: "分析期間",     value: "3〜5月",  good: true  },
+      { label: "ROAS（目標）", value: "2,055%",  good: true  },
+      { label: "TACOS（目標）","value": "4.87%", good: true  }
+    ],
+    tags: ["Amazon", "ギフト需要", "バスボム", "3〜5月"],
+    file: "2026-06/basubom-202605.html"
+  }
+  ,{
+    id:        "balance-board-202605",
+    createdAt: "2026-06-01",
+    period:    "2026年3〜5月",
+    product:   "バランスボード",
+    category:  "スポーツ・フィットネス",
+    brand:     "fungoo®",
+    asin:      "—",
+    platforms: ["Amazon", "楽天"],
+    summary:   "バランスボードの3〜5月分析。広告効率・CVR・アクセス人数の月次推移を把握。",
+    kpi: [
+      { label: "分析期間",   value: "3〜5月",  good: true },
+      { label: "チャネル",   value: "Amazon+楽天", good: true },
+      { label: "SKU数",     value: "複数",    good: true },
+      { label: "状態",      value: "確認要",  good: false }
+    ],
+    tags: ["Amazon", "楽天", "フィットネス", "3〜5月"],
+    file: "2026-06/balance-board-202605.html"
+  }
+  ,{
+    id:        "meshcap-202605",
+    createdAt: "2026-06-01",
+    period:    "2026年3〜5月",
+    product:   "メッシュキャップシリーズ",
+    category:  "ベビー用品",
+    brand:     "BabyGoo",
+    asin:      "—",
+    platforms: ["Amazon", "楽天"],
+    summary:   "メッシュキャップシリーズの3〜5月分析。SKU別の広告効率・CVR月次推移を把握。",
+    kpi: [
+      { label: "分析期間",   value: "3〜5月",  good: true },
+      { label: "チャネル",   value: "Amazon+楽天", good: true },
+      { label: "ブランド",   value: "BabyGoo", good: true },
+      { label: "状態",      value: "確認要",  good: false }
+    ],
+    tags: ["Amazon", "楽天", "ベビー用品", "3〜5月"],
+    file: "2026-06/meshcap-202605.html"
+  }
+  ,{
+    id:        "babyrobe-v2-202605",
+    createdAt: "2026-05-31",
+    period:    "2026年3〜5月",
+    product:   "ベビーバスローブ（改訂版）",
+    category:  "ベビー用品",
+    brand:     "BabyGoo",
+    asin:      "B0FC6884VV",
+    platforms: ["Amazon", "楽天"],
+    summary:   "ベビーバスローブ3〜5月分析の改訂版。5月正価（4,480円）運用によりROAS 239%・CVR 13.04%・粗利率34.45%を達成。Amazon主軸での利益最大化戦略を提案。",
+    kpi: [
+      { label: "Amazon累計売上",   value: "91.2万円", good: true  },
+      { label: "5月 ROAS",        value: "239%",    good: true  },
+      { label: "5月 CVR",         value: "13.04%",  good: true  },
+      { label: "5月 TACOS",       value: "24.4%",   good: true  }
+    ],
+    tags: ["Amazon重点", "正価戦略", "ベビー用品", "改訂版"],
+    file: "2026-06/babyrobe-v2-202605.html"
+  }
+  ,{
+    id:        "babyrobe-v1-202603",
+    createdAt: "2026-03-31",
+    period:    "2026年3〜5月",
+    product:   "ベビーバスローブ（初版）",
+    category:  "ベビー用品",
+    brand:     "BabyGoo",
+    asin:      "B0FC6884VV",
+    platforms: ["Amazon", "楽天"],
+    summary:   "ベビーバスローブ 初版分析レポート。Amazon・楽天の3〜5月KPIを初回集計。",
+    kpi: [
+      { label: "分析期間",  value: "3〜5月",   good: true },
+      { label: "チャネル",  value: "Amazon+楽天", good: true },
+      { label: "ASIN",     value: "B0FC6884VV", good: true },
+      { label: "バージョン", value: "初版",     good: false }
+    ],
+    tags: ["Amazon", "楽天", "ベビー用品", "初版"],
+    file: "2026-06/babyrobe-v1-202603.html"
+  }
   /* ── ここに次のレポートを追加 ──
   ,{
     id:        "商品名-YYYY-MM",
     createdAt: "YYYY-MM-DD",
     period:    "YYYY年M〜M月",
     product:   "商品名",
-    category:  "カテゴリ",
-    brand:     "ブランド",
-    asin:      "ASINXXXXXXXX",
-    platforms: ["Amazon"],
-    summary:   "サマリー文",
-    kpi: [
-      { label: "指標1", value: "値1", good: true },
-      { label: "指標2", value: "値2", good: false }
-    ],
-    tags: ["タグ1", "タグ2"],
-    file: "YYYY-MM/product.html"
+    ...
   }
   */
 ];
