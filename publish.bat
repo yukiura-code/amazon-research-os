@@ -39,7 +39,7 @@ if %errorlevel% neq 0 (
 :: ── プッシュ ───────────────────────────────────────
 echo.
 echo [3/3] GitHub Pages へ公開中...
-git push origin main
+git push origin master
 if %errorlevel% neq 0 (
   echo [WARN] push に失敗しました。
   echo       初回は以下を確認してください：
@@ -52,7 +52,7 @@ if %errorlevel% neq 0 (
 echo.
 echo ======================================================
 echo  公開完了！
-echo  URL: https://YOUR_USER.github.io/amazon-research-os/reports/
+echo  URL: https://yukiura-code.github.io/amazon-research-os/reports/
 echo ======================================================
 echo.
 pause
