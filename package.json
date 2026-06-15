@@ -1,0 +1,40 @@
+{
+  "name": "amazon-research-os",
+  "version": "1.0.0",
+  "description": "Amazon市場分析・競合分析・商品開発支援ツール",
+  "main": "scripts/index.js",
+  "scripts": {
+    "start": "node scripts/index.js",
+    "build": "node scripts/build.js",
+    "extract": "node scripts/extract/run.js",
+    "analyze": "node scripts/analysis/run.js",
+    "export:json": "node scripts/export/to-json.js",
+    "export:csv": "node scripts/export/to-csv.js",
+    "export:sheets": "node scripts/export/to-sheets.js",
+    "lint": "eslint scripts/**/*.js",
+    "format": "prettier --write scripts/**/*.js",
+    "publish:report": "node scripts/publish-report.js"
+  },
+  "dependencies": {
+    "axios": "^1.6.0",
+    "csv-writer": "^1.6.0",
+    "dotenv": "^16.3.1",
+    "fs-extra": "^11.1.1"
+  },
+  "devDependencies": {
+    "eslint": "^8.55.0",
+    "prettier": "^3.1.0"
+  },
+  "keywords": [
+    "amazon",
+    "research",
+    "market-analysis",
+    "seller-sprite",
+    "chrome-extension"
+  ],
+  "author": "Amazon Research OS",
+  "license": "MIT",
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}
