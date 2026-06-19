@@ -1,0 +1,1360 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>バスボムシリーズ 分析レポート 2026年3〜6月</title>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <style>
+    :root {
+      --primary: #1a2b4a;
+      --accent: #e8630a;
+      --accent2: #2e7dd1;
+      --bg: #f4f6f9;
+      --card: #ffffff;
+      --text: #1e2a3a;
+      --muted: #6b7a8d;
+      --border: #dde2ea;
+      --positive: #1a7f4b;
+      --negative: #c0392b;
+      --warn: #d4860a;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: 'Helvetica Neue', 'Noto Sans JP', Arial, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      font-size: 15px;
+      line-height: 1.6;
+    }
+
+    /* Header */
+    .header {
+      background: var(--primary);
+      color: #fff;
+      padding: 48px 48px 36px;
+    }
+    .header-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      flex-wrap: wrap;
+      gap: 16px;
+    }
+    .header h1 {
+      font-size: 26px;
+      font-weight: 700;
+      letter-spacing: 0.02em;
+      line-height: 1.35;
+    }
+    .header .subtitle {
+      margin-top: 8px;
+      font-size: 14px;
+      opacity: 0.75;
+    }
+    .header-meta {
+      text-align: right;
+      font-size: 13px;
+      opacity: 0.7;
+      line-height: 1.8;
+    }
+    .asin-badge {
+      display: inline-block;
+      margin-top: 12px;
+      padding: 4px 12px;
+      border: 1px solid rgba(255,255,255,0.35);
+      border-radius: 20px;
+      font-size: 12px;
+      letter-spacing: 0.05em;
+    }
+
+    /* Nav */
+    .nav {
+      background: #243558;
+      padding: 0 48px;
+      display: flex;
+      gap: 0;
+      overflow-x: auto;
+    }
+    .nav a {
+      color: rgba(255,255,255,0.65);
+      text-decoration: none;
+      padding: 14px 20px;
+      font-size: 13px;
+      white-space: nowrap;
+      border-bottom: 2px solid transparent;
+      transition: all 0.2s;
+    }
+    .nav a:hover { color: #fff; border-color: var(--accent); }
+
+    /* Main */
+    .main { max-width: 1100px; margin: 0 auto; padding: 40px 24px 80px; }
+
+    /* Section */
+    .section { margin-bottom: 56px; }
+    .section-title {
+      font-size: 18px;
+      font-weight: 700;
+      color: var(--primary);
+      padding-bottom: 10px;
+      border-bottom: 2px solid var(--accent);
+      margin-bottom: 24px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .section-title .num {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 28px;
+      height: 28px;
+      background: var(--accent);
+      color: #fff;
+      border-radius: 50%;
+      font-size: 14px;
+    }
+    .section-subtitle {
+      font-size: 15px;
+      font-weight: 700;
+      color: var(--primary);
+      margin: 24px 0 12px;
+      padding-left: 10px;
+      border-left: 3px solid var(--accent2);
+    }
+
+    /* KPI Cards */
+    .kpi-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: 16px;
+      margin-bottom: 32px;
+    }
+    .kpi-card {
+      background: var(--card);
+      border-radius: 10px;
+      padding: 20px 20px 16px;
+      box-shadow: 0 1px 4px rgba(0,0,0,0.07);
+      border-top: 3px solid var(--accent2);
+    }
+    .kpi-card.bb { border-top-color: #7b5ea7; }
+    .kpi-card.f33 { border-top-color: #bf0000; }
+    .kpi-card.f34 { border-top-color: #e8630a; }
+    .kpi-card .label { font-size: 12px; color: var(--muted); margin-bottom: 6px; }
+    .kpi-card .value { font-size: 22px; font-weight: 700; color: var(--primary); }
+    .kpi-card .sub { font-size: 12px; color: var(--muted); margin-top: 4px; }
+
+    /* Table */
+    .table-wrap { overflow-x: auto; margin-bottom: 24px; }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 13.5px;
+      background: var(--card);
+      border-radius: 10px;
+      overflow: hidden;
+      box-shadow: 0 1px 4px rgba(0,0,0,0.07);
+    }
+    thead tr { background: var(--primary); color: #fff; }
+    thead th {
+      padding: 12px 14px;
+      text-align: left;
+      font-weight: 600;
+      font-size: 12.5px;
+      letter-spacing: 0.03em;
+      white-space: nowrap;
+    }
+    thead th.center { text-align: center; }
+    tbody tr { border-bottom: 1px solid var(--border); }
+    tbody tr:last-child { border-bottom: none; }
+    tbody tr:hover { background: #f8fafc; }
+    tbody td { padding: 11px 14px; vertical-align: middle; }
+    tbody td.right { text-align: right; font-variant-numeric: tabular-nums; }
+    tbody td.center { text-align: center; }
+    .row-header { font-weight: 600; background: #f8fafc; color: var(--primary); font-size: 13px; }
+    .highlight-positive { color: var(--positive); font-weight: 700; }
+    .highlight-negative { color: var(--negative); font-weight: 700; }
+    .highlight-warn { color: var(--warn); font-weight: 700; }
+    .platform-tag {
+      display: inline-block;
+      padding: 2px 8px;
+      border-radius: 4px;
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.04em;
+    }
+    .tag-rakuten { background: #fff0f0; color: #a00000; }
+
+    /* Channel Compare */
+    .compare-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 20px;
+      margin-bottom: 24px;
+    }
+    @media(max-width: 600px){ .compare-grid { grid-template-columns: 1fr; } }
+    .compare-card {
+      background: var(--card);
+      border-radius: 10px;
+      padding: 24px;
+      box-shadow: 0 1px 4px rgba(0,0,0,0.07);
+    }
+    .compare-card h3 {
+      font-size: 15px;
+      font-weight: 700;
+      margin-bottom: 16px;
+      color: var(--primary);
+    }
+    .bar-row { margin-bottom: 10px; }
+    .bar-label { font-size: 12px; color: var(--muted); margin-bottom: 4px; display: flex; justify-content: space-between; }
+    .bar-track { height: 8px; background: var(--bg); border-radius: 4px; overflow: hidden; }
+    .bar-fill { height: 100%; border-radius: 4px; }
+
+    /* Insight Cards */
+    .insight-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 16px;
+      margin-bottom: 24px;
+    }
+    .insight-card {
+      background: var(--card);
+      border-radius: 10px;
+      padding: 20px 22px;
+      box-shadow: 0 1px 4px rgba(0,0,0,0.07);
+      border-left: 4px solid var(--accent2);
+    }
+    .insight-card.warn { border-left-color: var(--warn); }
+    .insight-card.danger { border-left-color: var(--negative); }
+    .insight-card.success { border-left-color: var(--positive); }
+    .insight-card h4 { font-size: 13.5px; font-weight: 700; margin-bottom: 8px; color: var(--primary); }
+    .insight-card p { font-size: 13px; color: #4a5568; line-height: 1.65; }
+
+    /* Action Grid */
+    .action-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 20px;
+      margin-bottom: 24px;
+    }
+    @media(max-width: 700px){ .action-grid { grid-template-columns: 1fr; } }
+    .action-block {
+      background: var(--card);
+      border-radius: 10px;
+      padding: 22px 24px;
+      box-shadow: 0 1px 4px rgba(0,0,0,0.07);
+    }
+    .action-block h3 {
+      font-size: 14px;
+      font-weight: 700;
+      margin-bottom: 14px;
+      color: var(--primary);
+      border-bottom: 1px solid var(--border);
+      padding-bottom: 10px;
+    }
+    .action-item {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 10px;
+      font-size: 13px;
+      line-height: 1.6;
+      color: #3a4a5a;
+    }
+    .action-item .icon {
+      flex-shrink: 0;
+      width: 20px;
+      height: 20px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 11px;
+      font-weight: 700;
+      margin-top: 2px;
+    }
+    .icon-rakuten { background: #fff0f0; color: #a00000; }
+    .icon-urgent { background: var(--negative); color: #fff; }
+
+    /* Unit Econ */
+    .unit-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 20px;
+      margin-bottom: 24px;
+    }
+    @media(max-width: 600px){ .unit-grid { grid-template-columns: 1fr; } }
+    .unit-card {
+      background: var(--card);
+      border-radius: 10px;
+      padding: 22px 24px;
+      box-shadow: 0 1px 4px rgba(0,0,0,0.07);
+    }
+    .unit-card h3 { font-size: 14px; font-weight: 700; margin-bottom: 16px; color: var(--primary); }
+    .unit-row {
+      display: flex;
+      justify-content: space-between;
+      padding: 7px 0;
+      border-bottom: 1px solid var(--border);
+      font-size: 13px;
+    }
+    .unit-row:last-child { border-bottom: none; font-weight: 700; font-size: 14px; }
+    .unit-row .unit-label { color: var(--muted); }
+    .unit-row .unit-val { font-variant-numeric: tabular-nums; }
+    .profit-positive { color: var(--positive); }
+    .profit-negative { color: var(--negative); }
+
+    /* Customer Insight */
+    .ci-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 16px;
+      margin-bottom: 24px;
+    }
+    @media(max-width: 700px){ .ci-grid { grid-template-columns: 1fr; } }
+    .ci-card {
+      background: var(--card);
+      border-radius: 10px;
+      padding: 20px;
+      box-shadow: 0 1px 4px rgba(0,0,0,0.07);
+      text-align: center;
+    }
+    .ci-card .ci-icon { font-size: 28px; margin-bottom: 10px; }
+    .ci-card h4 { font-size: 13px; font-weight: 700; margin-bottom: 8px; color: var(--primary); }
+    .ci-card p { font-size: 12.5px; color: #4a5568; line-height: 1.6; }
+
+    /* Before/After Cards */
+    .ba-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 16px;
+      margin-bottom: 24px;
+    }
+    .ba-card {
+      background: var(--card);
+      border-radius: 10px;
+      padding: 18px 20px;
+      box-shadow: 0 1px 4px rgba(0,0,0,0.07);
+      border-top: 3px solid var(--accent2);
+    }
+    .ba-card h4 {
+      font-size: 13px;
+      font-weight: 700;
+      margin-bottom: 12px;
+      color: var(--primary);
+    }
+    .ba-row {
+      display: flex;
+      justify-content: space-between;
+      font-size: 12.5px;
+      padding: 4px 0;
+      border-bottom: 1px solid var(--border);
+    }
+    .ba-row:last-child { border-bottom: none; padding-top: 8px; }
+    .ba-row .ba-label { color: var(--muted); }
+    .ba-row .ba-val { font-weight: 600; font-variant-numeric: tabular-nums; }
+    .change-positive { color: var(--positive); font-weight: 700; font-size: 15px; }
+    .change-negative { color: var(--negative); font-weight: 700; font-size: 15px; }
+    .change-neutral { color: var(--muted); font-weight: 700; font-size: 15px; }
+
+    /* Timeline */
+    .timeline-wrap {
+      background: var(--card);
+      border-radius: 10px;
+      padding: 20px 24px;
+      box-shadow: 0 1px 4px rgba(0,0,0,0.07);
+      margin-bottom: 24px;
+      overflow-x: auto;
+    }
+    .timeline-row {
+      display: flex;
+      align-items: center;
+      gap: 0;
+      min-width: 600px;
+    }
+    .tl-node {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      min-width: 130px;
+    }
+    .tl-dot {
+      width: 14px;
+      height: 14px;
+      border-radius: 50%;
+      background: var(--accent);
+      margin-bottom: 6px;
+      flex-shrink: 0;
+    }
+    .tl-dot.red { background: #bf0000; }
+    .tl-date { font-size: 11px; color: var(--muted); margin-bottom: 2px; }
+    .tl-label { font-size: 12px; font-weight: 700; color: var(--primary); text-align: center; line-height: 1.3; }
+    .tl-line { flex: 1; height: 2px; background: var(--border); min-width: 24px; margin-bottom: 16px; }
+
+    /* Footer */
+    .footer {
+      background: var(--primary);
+      color: rgba(255,255,255,0.5);
+      text-align: center;
+      padding: 24px;
+      font-size: 12px;
+    }
+
+    /* Callout */
+    .callout {
+      background: #fff8e6;
+      border: 1px solid #f5c842;
+      border-left: 4px solid #f5c842;
+      border-radius: 8px;
+      padding: 14px 18px;
+      font-size: 13px;
+      margin-bottom: 20px;
+      color: #5a4a00;
+    }
+    .callout strong { color: #3a3000; }
+
+    .note { font-size: 12px; color: var(--muted); margin-top: 8px; }
+    .chart-wrap { background: var(--card); border-radius: 10px; padding: 24px; box-shadow: 0 1px 4px rgba(0,0,0,0.07); margin-bottom: 24px; }
+    .chart-wrap h3 { font-size: 14px; font-weight: 700; color: var(--primary); margin-bottom: 16px; }
+  </style>
+</head>
+<body>
+
+<!-- Header -->
+<div class="header">
+  <div class="header-top">
+    <div>
+      <div style="font-size:12px;opacity:0.6;margin-bottom:6px;letter-spacing:0.08em;">PRODUCT ANALYSIS REPORT</div>
+      <h1>バスボムシリーズ 販売分析レポート</h1>
+      <div class="subtitle">楽天市場｜対象期間：2026年3月〜6月（6月は6/19まで）</div>
+      <div class="asin-badge">管理番号: bathbomb / fun33 / fun34｜fungoo</div>
+    </div>
+    <div class="header-meta">
+      <div>作成日：2026年6月19日</div>
+      <div>BabyGoo / fungoo</div>
+      <div>株式会社ASAGIRI</div>
+    </div>
+  </div>
+</div>
+
+<!-- Nav -->
+<nav class="nav">
+  <a href="#summary">月次サマリー</a>
+  <a href="#channel">チャネル構成</a>
+  <a href="#overview">モール別総括</a>
+  <a href="#unit">ユニットエコノミクス</a>
+  <a href="#insight">顧客インサイト</a>
+  <a href="#action">アクション案</a>
+  <a href="#施策">施策効果</a>
+</nav>
+
+<div class="main">
+
+  <!-- ========== SECTION 1 ========== -->
+  <div class="section" id="summary">
+    <div class="section-title"><span class="num">1</span>月次サマリー比較</div>
+
+    <div style="margin-bottom:16px;font-size:13px;color:var(--muted);">
+      <span class="platform-tag tag-rakuten">楽天市場</span>&nbsp;3商品・楽天市場のみ。粗利はRPP広告費のみ控除（仕入・送料・手数料は非計上）。6月は6/19まで。
+    </div>
+
+    <!-- bathbomb -->
+    <div class="section-subtitle">バスボムボール12個（bathbomb / bathbombss）</div>
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>指標</th>
+            <th class="center">3月</th>
+            <th class="center">4月</th>
+            <th class="center">5月</th>
+            <th class="center">6月（〜19日）</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>売上点数</td>
+            <td class="center highlight-positive">72個</td>
+            <td class="center">47個</td>
+            <td class="center">42個</td>
+            <td class="center highlight-negative">30個</td>
+          </tr>
+          <tr>
+            <td>売上金額</td>
+            <td class="center highlight-positive">¥200,880</td>
+            <td class="center">¥133,640</td>
+            <td class="center">¥118,080</td>
+            <td class="center highlight-negative">¥87,794</td>
+          </tr>
+          <tr>
+            <td>アクセス人数</td>
+            <td class="center highlight-positive">1,890人</td>
+            <td class="center">1,582人</td>
+            <td class="center">1,342人</td>
+            <td class="center highlight-negative">1,172人</td>
+          </tr>
+          <tr>
+            <td>RPP広告費</td>
+            <td class="center highlight-negative">¥12,000</td>
+            <td class="center">¥8,000</td>
+            <td class="center">¥7,000</td>
+            <td class="center highlight-positive">¥5,424</td>
+          </tr>
+          <tr>
+            <td>CTR（RPP）</td>
+            <td class="center highlight-positive">0.14%</td>
+            <td class="center">0.12%</td>
+            <td class="center">0.11%</td>
+            <td class="center highlight-warn">0.09%</td>
+          </tr>
+          <tr>
+            <td>CPC実績</td>
+            <td class="center highlight-negative">¥21</td>
+            <td class="center">¥19</td>
+            <td class="center">¥18</td>
+            <td class="center highlight-positive">¥17</td>
+          </tr>
+          <tr>
+            <td>CVR（12時間）</td>
+            <td class="center highlight-positive">3.81%</td>
+            <td class="center">2.97%</td>
+            <td class="center">3.13%</td>
+            <td class="center highlight-negative">2.56%</td>
+          </tr>
+          <tr>
+            <td>ROAS</td>
+            <td class="center">1,674%</td>
+            <td class="center">1,671%</td>
+            <td class="center highlight-positive">1,687%</td>
+            <td class="center highlight-negative">1,619%</td>
+          </tr>
+          <tr>
+            <td>TACOS</td>
+            <td class="center">5.97%</td>
+            <td class="center highlight-negative">5.99%</td>
+            <td class="center highlight-positive">5.93%</td>
+            <td class="center">6.18%</td>
+          </tr>
+          <tr>
+            <td>粗利（RPP差引）</td>
+            <td class="center highlight-positive">¥188,880</td>
+            <td class="center">¥125,640</td>
+            <td class="center">¥111,080</td>
+            <td class="center highlight-negative">¥82,370</td>
+          </tr>
+          <tr>
+            <td>オーガニック売上比率</td>
+            <td class="center highlight-negative">69.3%</td>
+            <td class="center">75.0%</td>
+            <td class="center">82.0%</td>
+            <td class="center highlight-positive">89.0%</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="note">※ CTR目標 1〜2%（楽天基準）に対し全月未達。CVR目標 5〜8%に対し全月未達。</div>
+
+    <!-- fun33 -->
+    <div class="section-subtitle" style="margin-top:28px;">バスボムドーナツ9個（fun33 / fun33ss）</div>
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>指標</th>
+            <th class="center">3月</th>
+            <th class="center">4月</th>
+            <th class="center">5月</th>
+            <th class="center">6月（〜19日）</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>売上点数</td>
+            <td class="center highlight-positive">312個</td>
+            <td class="center">55個</td>
+            <td class="center highlight-negative">49個</td>
+            <td class="center">81個</td>
+          </tr>
+          <tr>
+            <td>売上金額</td>
+            <td class="center highlight-positive">¥897,580</td>
+            <td class="center">¥158,000</td>
+            <td class="center highlight-negative">¥140,000</td>
+            <td class="center">¥223,998</td>
+          </tr>
+          <tr>
+            <td>アクセス人数</td>
+            <td class="center highlight-positive">6,278人</td>
+            <td class="center">2,723人</td>
+            <td class="center highlight-negative">2,450人</td>
+            <td class="center">3,011人</td>
+          </tr>
+          <tr>
+            <td>RPP広告費</td>
+            <td class="center highlight-negative">¥72,000</td>
+            <td class="center">¥18,000</td>
+            <td class="center">¥15,000</td>
+            <td class="center highlight-positive">¥12,824</td>
+          </tr>
+          <tr>
+            <td>CTR（RPP）</td>
+            <td class="center highlight-positive">1.45%</td>
+            <td class="center">1.08%</td>
+            <td class="center highlight-negative">0.93%</td>
+            <td class="center">1.63%</td>
+          </tr>
+          <tr>
+            <td>CPC実績</td>
+            <td class="center">¥40</td>
+            <td class="center highlight-positive">¥36</td>
+            <td class="center">—</td>
+            <td class="center highlight-negative">¥54</td>
+          </tr>
+          <tr>
+            <td>CVR（12時間）</td>
+            <td class="center highlight-positive">4.97%</td>
+            <td class="center">2.02%</td>
+            <td class="center highlight-negative">2.00%</td>
+            <td class="center">2.69%</td>
+          </tr>
+          <tr>
+            <td>ROAS</td>
+            <td class="center">1,246%</td>
+            <td class="center highlight-negative">878%</td>
+            <td class="center">933%</td>
+            <td class="center highlight-positive">1,747%</td>
+          </tr>
+          <tr>
+            <td>TACOS</td>
+            <td class="center">8.02%</td>
+            <td class="center highlight-negative">11.39%</td>
+            <td class="center">10.71%</td>
+            <td class="center highlight-positive">5.72%</td>
+          </tr>
+          <tr>
+            <td>粗利（RPP差引）</td>
+            <td class="center highlight-positive">¥825,580</td>
+            <td class="center">¥140,000</td>
+            <td class="center highlight-negative">¥125,000</td>
+            <td class="center">¥211,174</td>
+          </tr>
+          <tr>
+            <td>オーガニック売上比率</td>
+            <td class="center highlight-negative">55.0%</td>
+            <td class="center">62.0%</td>
+            <td class="center">68.0%</td>
+            <td class="center highlight-positive">72.0%</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="note">※ 3月はスーパーセール（3/4〜3/10）により売上・アクセス急増。6月はスーパーSALE（6/4〜6/10）で回復。</div>
+
+    <!-- fun34 -->
+    <div class="section-subtitle" style="margin-top:28px;">バスボムケーキ9個（fun34 / fun34ss）</div>
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>指標</th>
+            <th class="center">3月</th>
+            <th class="center">4月</th>
+            <th class="center">5月</th>
+            <th class="center">6月（〜19日）</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>売上点数</td>
+            <td class="center highlight-positive">166個</td>
+            <td class="center">83個</td>
+            <td class="center">85個</td>
+            <td class="center highlight-negative">67個</td>
+          </tr>
+          <tr>
+            <td>売上金額</td>
+            <td class="center highlight-positive">¥480,000</td>
+            <td class="center">¥240,000</td>
+            <td class="center">¥245,000</td>
+            <td class="center highlight-negative">¥192,798</td>
+          </tr>
+          <tr>
+            <td>アクセス人数</td>
+            <td class="center highlight-negative">3,120人</td>
+            <td class="center">2,024人</td>
+            <td class="center">2,237人</td>
+            <td class="center highlight-positive">3,873人</td>
+          </tr>
+          <tr>
+            <td>RPP広告費</td>
+            <td class="center highlight-positive">¥25,000</td>
+            <td class="center">¥18,000</td>
+            <td class="center">¥21,834</td>
+            <td class="center highlight-negative">¥43,881</td>
+          </tr>
+          <tr>
+            <td>CTR（RPP）</td>
+            <td class="center highlight-negative">0.166%</td>
+            <td class="center">0.182%</td>
+            <td class="center">0.205%</td>
+            <td class="center highlight-positive">0.228%</td>
+          </tr>
+          <tr>
+            <td>CPC実績</td>
+            <td class="center highlight-positive">¥45</td>
+            <td class="center">¥48</td>
+            <td class="center">¥52</td>
+            <td class="center highlight-negative">¥78</td>
+          </tr>
+          <tr>
+            <td>CVR（12時間）</td>
+            <td class="center highlight-positive">5.32%</td>
+            <td class="center">4.10%</td>
+            <td class="center">3.80%</td>
+            <td class="center highlight-negative">1.73%</td>
+          </tr>
+          <tr>
+            <td>ROAS</td>
+            <td class="center highlight-positive">1,920%</td>
+            <td class="center">1,333%</td>
+            <td class="center">1,122%</td>
+            <td class="center highlight-negative">439%</td>
+          </tr>
+          <tr>
+            <td>TACOS</td>
+            <td class="center highlight-positive">5.21%</td>
+            <td class="center">7.50%</td>
+            <td class="center">8.91%</td>
+            <td class="center highlight-warn">22.76%</td>
+          </tr>
+          <tr>
+            <td>粗利（RPP差引）</td>
+            <td class="center highlight-positive">¥455,000</td>
+            <td class="center">¥222,000</td>
+            <td class="center">¥223,166</td>
+            <td class="center highlight-negative">¥148,917</td>
+          </tr>
+          <tr>
+            <td>オーガニック売上比率</td>
+            <td class="center highlight-positive">75.0%</td>
+            <td class="center">68.0%</td>
+            <td class="center">65.0%</td>
+            <td class="center highlight-negative">55.0%</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="note">※ CTR上昇にもかかわらずCVRが5.32%→1.73%に急落（▼67.5%）。fun34ssサブページが5月¥33,078→6月¥0に完全停止。</div>
+    <div class="note">※ 楽天の粗利はRPP広告費のみ控除（仕入・送料・手数料は非計上）</div>
+  </div>
+
+  <!-- ========== SECTION 2 ========== -->
+  <div class="section" id="channel">
+    <div class="section-title"><span class="num">2</span>チャネル構成（3〜6月累計）</div>
+
+    <div class="kpi-grid">
+      <div class="kpi-card bb">
+        <div class="label">bathbomb 累計売上</div>
+        <div class="value">¥540,394</div>
+        <div class="sub">構成比 17.3%｜191個</div>
+      </div>
+      <div class="kpi-card f33">
+        <div class="label">fun33 累計売上</div>
+        <div class="value">¥1,419,578</div>
+        <div class="sub">構成比 45.5%｜497個</div>
+      </div>
+      <div class="kpi-card f34">
+        <div class="label">fun34 累計売上</div>
+        <div class="value">¥1,157,798</div>
+        <div class="sub">構成比 37.2%｜401個</div>
+      </div>
+      <div class="kpi-card">
+        <div class="label">シリーズ合計</div>
+        <div class="value">¥3,117,770</div>
+        <div class="sub">3〜6月計｜1,089個｜RPP ¥258,963｜TACOS 8.3%</div>
+      </div>
+    </div>
+
+    <div class="compare-grid">
+      <div class="compare-card">
+        <h3>売上金額 月次推移（3商品合計）</h3>
+        <div style="font-size:11px;color:var(--muted);margin-bottom:8px;">最大値（fun33 3月 ¥897,580）=100%</div>
+        <div class="bar-row">
+          <div class="bar-label"><span>bathbomb 3月</span><span>¥200,880</span></div>
+          <div class="bar-track"><div class="bar-fill" style="width:22%;background:#7b5ea7;"></div></div>
+        </div>
+        <div class="bar-row">
+          <div class="bar-label"><span>bathbomb 4月</span><span>¥133,640</span></div>
+          <div class="bar-track"><div class="bar-fill" style="width:15%;background:#7b5ea7;opacity:.7;"></div></div>
+        </div>
+        <div class="bar-row">
+          <div class="bar-label"><span>bathbomb 5月</span><span>¥118,080</span></div>
+          <div class="bar-track"><div class="bar-fill" style="width:13%;background:#7b5ea7;opacity:.5;"></div></div>
+        </div>
+        <div class="bar-row">
+          <div class="bar-label"><span>bathbomb 6月</span><span>¥87,794</span></div>
+          <div class="bar-track"><div class="bar-fill" style="width:10%;background:#7b5ea7;opacity:.35;"></div></div>
+        </div>
+        <div style="margin:12px 0 4px;border-top:1px solid var(--border);padding-top:10px;"></div>
+        <div class="bar-row">
+          <div class="bar-label"><span>fun33 3月 ★最高</span><span>¥897,580</span></div>
+          <div class="bar-track"><div class="bar-fill" style="width:100%;background:#bf0000;"></div></div>
+        </div>
+        <div class="bar-row">
+          <div class="bar-label"><span>fun33 4月</span><span>¥158,000</span></div>
+          <div class="bar-track"><div class="bar-fill" style="width:18%;background:#bf0000;opacity:.6;"></div></div>
+        </div>
+        <div class="bar-row">
+          <div class="bar-label"><span>fun33 5月</span><span>¥140,000</span></div>
+          <div class="bar-track"><div class="bar-fill" style="width:16%;background:#bf0000;opacity:.5;"></div></div>
+        </div>
+        <div class="bar-row">
+          <div class="bar-label"><span>fun33 6月</span><span>¥223,998</span></div>
+          <div class="bar-track"><div class="bar-fill" style="width:25%;background:#bf0000;opacity:.75;"></div></div>
+        </div>
+        <div style="margin:12px 0 4px;border-top:1px solid var(--border);padding-top:10px;"></div>
+        <div class="bar-row">
+          <div class="bar-label"><span>fun34 3月</span><span>¥480,000</span></div>
+          <div class="bar-track"><div class="bar-fill" style="width:53%;background:#e8630a;"></div></div>
+        </div>
+        <div class="bar-row">
+          <div class="bar-label"><span>fun34 4月</span><span>¥240,000</span></div>
+          <div class="bar-track"><div class="bar-fill" style="width:27%;background:#e8630a;opacity:.7;"></div></div>
+        </div>
+        <div class="bar-row">
+          <div class="bar-label"><span>fun34 5月</span><span>¥245,000</span></div>
+          <div class="bar-track"><div class="bar-fill" style="width:27%;background:#e8630a;opacity:.7;"></div></div>
+        </div>
+        <div class="bar-row">
+          <div class="bar-label"><span>fun34 6月</span><span>¥192,798</span></div>
+          <div class="bar-track"><div class="bar-fill" style="width:21%;background:#e8630a;opacity:.5;"></div></div>
+        </div>
+      </div>
+      <div class="compare-card">
+        <h3>TACOS・CVR 月次推移</h3>
+        <div style="font-size:11px;color:var(--muted);margin-bottom:8px;">TACOS（RPP広告比率）</div>
+        <div class="bar-row">
+          <div class="bar-label"><span>bathbomb 3〜6月</span><span>5.9〜6.2%（安定）</span></div>
+          <div class="bar-track"><div class="bar-fill" style="width:27%;background:#7b5ea7;"></div></div>
+        </div>
+        <div class="bar-row">
+          <div class="bar-label"><span>fun33 3月</span><span>8.02%</span></div>
+          <div class="bar-track"><div class="bar-fill" style="width:35%;background:#bf0000;opacity:.7;"></div></div>
+        </div>
+        <div class="bar-row">
+          <div class="bar-label"><span>fun33 4〜5月</span><span>10〜11%</span></div>
+          <div class="bar-track"><div class="bar-fill" style="width:50%;background:#bf0000;opacity:.5;"></div></div>
+        </div>
+        <div class="bar-row">
+          <div class="bar-label"><span>fun33 6月 ◀改善</span><span>5.72%</span></div>
+          <div class="bar-track"><div class="bar-fill" style="width:25%;background:#1a7f4b;"></div></div>
+        </div>
+        <div class="bar-row">
+          <div class="bar-label"><span>fun34 3月</span><span>5.21%</span></div>
+          <div class="bar-track"><div class="bar-fill" style="width:23%;background:#e8630a;opacity:.6;"></div></div>
+        </div>
+        <div class="bar-row">
+          <div class="bar-label"><span style="color:var(--warn);font-weight:700;">fun34 6月 ▲急増</span><span style="color:var(--warn);font-weight:700;">22.76%</span></div>
+          <div class="bar-track"><div class="bar-fill" style="width:100%;background:#c0392b;"></div></div>
+        </div>
+        <div style="margin:16px 0 6px;border-top:1px solid var(--border);padding-top:10px;font-size:11px;color:var(--muted);">CVR（12時間）推移</div>
+        <div class="bar-row">
+          <div class="bar-label"><span>fun34 3月</span><span>5.32% ★最高</span></div>
+          <div class="bar-track"><div class="bar-fill" style="width:100%;background:#1a7f4b;"></div></div>
+        </div>
+        <div class="bar-row">
+          <div class="bar-label"><span>fun34 4月</span><span>4.10%</span></div>
+          <div class="bar-track"><div class="bar-fill" style="width:77%;background:#2e7dd1;"></div></div>
+        </div>
+        <div class="bar-row">
+          <div class="bar-label"><span>fun34 5月</span><span>3.80%</span></div>
+          <div class="bar-track"><div class="bar-fill" style="width:71%;background:#e8630a;"></div></div>
+        </div>
+        <div class="bar-row">
+          <div class="bar-label"><span style="color:var(--negative);font-weight:700;">fun34 6月 ▼崩壊</span><span style="color:var(--negative);font-weight:700;">1.73%</span></div>
+          <div class="bar-track"><div class="bar-fill" style="width:33%;background:#c0392b;"></div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ========== SECTION 3 ========== -->
+  <div class="section" id="overview">
+    <div class="section-title"><span class="num">3</span>モール別総括</div>
+
+    <div class="insight-grid">
+      <div class="insight-card success">
+        <h4>fun33｜唯一の反転商品・6月SS回復</h4>
+        <p>3月スーパーセール（¥897,580）を筆頭に全期間で最大売上シェア45.5%を確保。4〜5月はTACOS 10〜11%台まで悪化したが、6月スーパーSALEで売上¥223,998・ROAS 1,747%・TACOS 5.72%と全指標回復。オーガニック比率55%→72%への改善が示すように<strong>SEO育成が着実に進行中</strong>。シリーズ牽引商品として引き続き重点投資対象。</p>
+      </div>
+      <div class="insight-card">
+        <h4>bathbomb｜オーガニック89%に到達・広告効率は良好</h4>
+        <p>TACOS 5.9〜6.2%（3〜6月通じて安定）・ROAS 1,619〜1,687%と広告効率は3商品中最も安定。オーガニック比率は69.3%→89.0%へ継続上昇しており、SEOの自然育成が機能している。一方、<strong>CTR 0.09%（目標1〜2%）・CVR 2.56%（目標5〜8%）が全月未達</strong>で、ページ自体の訴求力に構造的な課題がある。</p>
+      </div>
+      <div class="insight-card danger">
+        <h4>fun34｜【緊急】CVR 5.32%→1.73%・TACOS 22.76%</h4>
+        <p>CTRは0.166%→0.228%（+37%）と上昇しているにもかかわらず、CVRが5.32%→1.73%（<strong>▼67.5%</strong>）に急落。アクセスは増えているのに買われない「転換障壁」が発生している。RPPを増投した結果TACOS 22.76%（ACOS基準では採算割れ水準）に急騰。<strong>ページ・価格・構成の即時修正が急務。</strong></p>
+      </div>
+      <div class="insight-card danger">
+        <h4>fun34ss｜サブページ6月完全停止（¥33,078→¥0）</h4>
+        <p>fun34のコピーページ（fun34ss）が5月¥33,078の売上を記録していたが、6月は¥0に完全停止。掲載停止・在庫切れ・ページ問題のいずれかが原因。SEOスコアへの悪影響が懸念されるほか、<strong>潜在売上損失が月間¥33,000以上と推定される。</strong>掲載状態の即時確認が必要。</p>
+      </div>
+    </div>
+
+    <div class="callout">
+      <strong>直近（6月19日現在）：</strong>
+      <strong>6月後半マラソンが明日（6/20）開始</strong>。fun33は6月SS後も日次¥10,000前後を維持しており、マラソン参加でさらなる上積みが期待できる。fun34はCVR崩壊（1.73%）が未解決のままマラソンを迎えており、広告費をかけても転換しない状況が続く。<strong>今日中にfun34のページ修正・fun34ss掲載確認を着手しないと、マラソン期間（〜6/26推定）の売上機会を丸ごと損失する。</strong>
+    </div>
+  </div>
+
+  <!-- ========== SECTION 4 ========== -->
+  <div class="section" id="unit">
+    <div class="section-title"><span class="num">4</span>ユニットエコノミクス（1個あたり採算）</div>
+
+    <div style="font-size:13px;color:var(--muted);margin-bottom:16px;">fun33（バスボムドーナツ）基準。楽天手数料は推定8%で計算。</div>
+
+    <div class="unit-grid">
+      <div class="unit-card">
+        <h3>正価 ¥2,858 × TACOS 8.3%（通常運用）</h3>
+        <div class="unit-row">
+          <span class="unit-label">販売金額</span>
+          <span class="unit-val">¥2,858</span>
+        </div>
+        <div class="unit-row">
+          <span class="unit-label">仕入れ原価</span>
+          <span class="unit-val">▲ ¥900</span>
+        </div>
+        <div class="unit-row">
+          <span class="unit-label">送料費</span>
+          <span class="unit-val">▲ ¥506</span>
+        </div>
+        <div class="unit-row">
+          <span class="unit-label">在庫保管費</span>
+          <span class="unit-val">▲ ¥34</span>
+        </div>
+        <div class="unit-row">
+          <span class="unit-label">楽天手数料（推定8%）</span>
+          <span class="unit-val">▲ ¥229</span>
+        </div>
+        <div class="unit-row">
+          <span class="unit-label">広告費（TACOS 8.3%）</span>
+          <span class="unit-val">▲ ¥237</span>
+        </div>
+        <div class="unit-row">
+          <span class="unit-label profit-positive">1個あたり推定粗利</span>
+          <span class="unit-val profit-positive"><strong>¥952（33.3%）</strong></span>
+        </div>
+      </div>
+      <div class="unit-card">
+        <h3>正価 ¥2,858 × TACOS 22.76%（fun34 6月悪化時）</h3>
+        <div class="unit-row">
+          <span class="unit-label">販売金額</span>
+          <span class="unit-val">¥2,858</span>
+        </div>
+        <div class="unit-row">
+          <span class="unit-label">仕入れ原価</span>
+          <span class="unit-val">▲ ¥900</span>
+        </div>
+        <div class="unit-row">
+          <span class="unit-label">送料費</span>
+          <span class="unit-val">▲ ¥506</span>
+        </div>
+        <div class="unit-row">
+          <span class="unit-label">在庫保管費</span>
+          <span class="unit-val">▲ ¥34</span>
+        </div>
+        <div class="unit-row">
+          <span class="unit-label">楽天手数料（推定8%）</span>
+          <span class="unit-val">▲ ¥229</span>
+        </div>
+        <div class="unit-row">
+          <span class="unit-label">広告費（TACOS 22.76%）</span>
+          <span class="unit-val">▲ ¥651</span>
+        </div>
+        <div class="unit-row">
+          <span class="unit-label profit-negative">1個あたり推定粗利</span>
+          <span class="unit-val profit-negative"><strong>¥538（18.8%）</strong></span>
+        </div>
+      </div>
+    </div>
+    <div class="callout">
+      <strong>広告効率悪化のインパクト：</strong>TACOS 8.3%→22.76% に上昇すると、同じ価格帯でも<strong>1個あたり粗利が¥952→¥538（▼44%）</strong>に急減する。CVR回復前にRPP予算を増投しても採算が悪化するだけ。fun34はまずページ修正によるCVR回復を優先し、その後にRPP増投に移行する順序を守ること。
+    </div>
+  </div>
+
+  <!-- ========== SECTION 5 ========== -->
+  <div class="section" id="insight">
+    <div class="section-title"><span class="num">5</span>顧客インサイト × マーケ観点</div>
+
+    <div class="ci-grid">
+      <div class="ci-card">
+        <div class="ci-icon">🛁</div>
+        <h4>購買ターゲット</h4>
+        <p>主な購買者は<strong>バスタイムを楽しみたい20〜40代女性・親子</strong>。バスボムは入浴剤カテゴリで季節を問わず需要があるが、スーパーセール期間に売上が5〜7倍に跳ね上がることから、<strong>価格感度の高いイベント購買層</strong>が中心。ギフト需要（誕生日・出産祝い）も相当数混在と推定。</p>
+      </div>
+      <div class="ci-card">
+        <div class="ci-icon">🎯</div>
+        <h4>楽天：ポイント・イベント感度層</h4>
+        <p>通常期のCVRが2〜5%台に留まる一方、セール期間は7倍超の販売数を記録。<strong>「お得感」がトリガーとなる回遊型購買層</strong>が主体。fun33・fun34の通常期CVR低下は需要減ではなく、セール以外で動かないユーザー行動の表れ。イベント参加の戦略的設計が収益の鍵。</p>
+      </div>
+      <div class="ci-card">
+        <div class="ci-icon">📊</div>
+        <h4>商品別ユーザー特性の違い</h4>
+        <p>fun34（ケーキ型）はCTR 0.228%（上昇中）にもかかわらずCVRが1.73%まで低下。<strong>サムネイルで興味を引けているのに購買に至らない</strong>商品ページの問題。bathbombはCTR・CVR共に目標未達だが広告効率は最高（TACOS 6%台）で、SEO流入比率89%と自立的な動きをしている。</p>
+      </div>
+      <div class="ci-card">
+        <div class="ci-icon">🎁</div>
+        <h4>ギフト・セット需要の未獲得余地</h4>
+        <p>バスボム3商品は単品販売が中心だが、<strong>詰め合わせセット・ギフト対応</strong>（のし・ラッピング）への展開で新規層にリーチできる可能性がある。「バスギフト」「誕生日プレゼント」「お風呂セット」等のKWは競合が少なく、CVR向上の差別化軸になりうる。</p>
+      </div>
+      <div class="ci-card">
+        <div class="ci-icon">📅</div>
+        <h4>季節性と7月以降のリスク</h4>
+        <p>バスボムは入浴需要と連動するため<strong>夏（6〜8月）が需要低期</strong>になりやすい。6月現在の売上回復（SS効果）が一巡すると、7月は通常期の低水準に戻る可能性が高い。秋冬（9月〜）の需要回帰に向けた在庫・ページ・広告設計を今から準備することが重要。</p>
+      </div>
+      <div class="ci-card">
+        <div class="ci-icon">🚀</div>
+        <h4>チャネル最適化の方向性</h4>
+        <p>楽天は<strong>「セール集中型 + オーガニック育成」の二段構え</strong>が最適解。イベント期間に売上を積み上げつつRPPでSEOスコアを改善し、非イベント期のオーガニック比率を高めていく（fun33はこの軌道に乗りつつある）。fun34は先にCVRを5%超に回復させてからこのサイクルを回す。</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- ========== SECTION 6 ========== -->
+  <div class="section" id="action">
+    <div class="section-title"><span class="num">6</span>アクション案</div>
+
+    <div class="table-wrap" style="margin-bottom:28px;">
+      <table>
+        <thead>
+          <tr>
+            <th style="width:15%;">軸</th>
+            <th>bathbomb（ボール）</th>
+            <th>fun33（ドーナツ）</th>
+            <th>fun34（ケーキ）</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td class="row-header">価格戦略</td>
+            <td>正価維持。CTR低いため値下げより訴求改善優先。</td>
+            <td>正価維持。セール期間に集中した値引きで爆発的売上を確保。</td>
+            <td>CVR崩壊中のため価格変更不可。まずページ修正。TACOS改善後に検討。</td>
+          </tr>
+          <tr>
+            <td class="row-header">広告（RPP）</td>
+            <td>TACOS 6%台は良好。現状維持。マラソン期間のみ増投検討。</td>
+            <td>6月TACOS 5.72%に改善。マラソン向けに入札微増。CVRが戻れば増投余地あり。</td>
+            <td><strong>CVR回復まで現状水準を維持（以上増投禁止）。</strong> 現在RPP増投でTACOS 22.76%と採算悪化中。</td>
+          </tr>
+          <tr>
+            <td class="row-header">CVR改善</td>
+            <td>ページ全体の訴求見直し（使用シーン・成分・香り）。目標CVR 4%以上。</td>
+            <td>ページ品質は維持。レビュー獲得施策を継続（CVR 3.5%目標）。</td>
+            <td><strong>【最緊急】ページ全面見直し。</strong>購入障壁の特定（価格・画像・構成・レビュー不足）→ 修正実施。目標CVR 4%以上。</td>
+          </tr>
+          <tr>
+            <td class="row-header">CTR改善</td>
+            <td>サムネイル刷新（キャッチコピー追加・色味強化）。目標CTR 0.3%。</td>
+            <td>CTRは1〜1.6%で概ねOK。セール時の訴求強化（クーポンバッジ表示等）。</td>
+            <td>CTR上昇中（0.228%）は良い兆候。CVR修正後にCTRさらに強化。</td>
+          </tr>
+          <tr>
+            <td class="row-header">イベント対応</td>
+            <td colspan="3" style="color:#3a4a5a;">
+              <strong>6月後半マラソン（6/20〜）：</strong>fun33はそのまま参加。fun34はCVR修正してから参加（未修正なら広告費無駄）。<br>
+              <strong>7月：</strong>バスボムは夏の需要低期。広告費抑制、在庫過多注意。<br>
+              <strong>9〜11月：</strong>秋冬需要回帰に向け8月末までに在庫調達・ページ強化を完了。
+            </td>
+          </tr>
+          <tr>
+            <td class="row-header">fun34ss</td>
+            <td colspan="3" style="color:#3a4a5a;"><strong>【緊急】</strong>掲載状態を即時確認。在庫切れ・ページ問題・価格設定ミスのいずれかを特定し、6/20（マラソン開始）前に復旧。月間推定損失 ¥33,000〜。</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="action-grid">
+      <div class="action-block">
+        <h3>優先アクション（6月〜7月上旬）</h3>
+        <div class="action-item">
+          <span class="icon icon-urgent">!</span>
+          <span><strong>【今日中】fun34 ページ全面修正開始</strong>。CVR 1.73%→4%以上を目標。購入障壁（画像・価格・説明文・レビュー）を特定し修正。6/20マラソン開始前に適用。</span>
+        </div>
+        <div class="action-item">
+          <span class="icon icon-urgent">!</span>
+          <span><strong>【今日中】fun34ss 掲載状態確認・復旧</strong>。楽天管理画面で掲載停止理由を特定し、6/20までに再掲載。月¥33,000相当の損失停止。</span>
+        </div>
+        <div class="action-item">
+          <span class="icon icon-rakuten">R</span>
+          <span>fun33・bathbomb をマラソン（6/20〜）にエントリー。fun33はRPP入札を微増（目標CTR 1.8%・CVR 3.5%）。</span>
+        </div>
+        <div class="action-item">
+          <span class="icon icon-rakuten">R</span>
+          <span>bathbomb サムネイル刷新着手。キャッチコピー強化（「12個入り・贈り物に」等）でCTR 0.09%→0.15%以上を目指す。</span>
+        </div>
+      </div>
+      <div class="action-block">
+        <h3>中期アクション（7〜9月）</h3>
+        <div class="action-item">
+          <span class="icon icon-rakuten">R</span>
+          <span>fun34 CVR回復後（4%以上達成後）にRPP増投を再開。TACOS 12%以下を維持しながらSEOスコア改善サイクルへ移行。</span>
+        </div>
+        <div class="action-item">
+          <span class="icon icon-rakuten">R</span>
+          <span>fun33 SEO強化継続。オーガニック比率72%→80%以上を9月末目標。高CVRキーワードへのRPP集中投資でSEOスコアを底上げ。</span>
+        </div>
+        <div class="action-item">
+          <span class="icon icon-rakuten">R</span>
+          <span>バスボム3商品のギフト訴求を追加（出産祝い・誕生日向け）。ラッピング・のし対応の掲載と、「バスギフト」「お風呂セット」KW追加。</span>
+        </div>
+        <div class="action-item">
+          <span class="icon icon-rakuten">R</span>
+          <span>秋冬需要（9月〜）に向け、8月末までに在庫調達計画確定。スーパーSALE（9月/12月）向けのクーポン・セール価格設計も同時に完了。</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="section-subtitle" style="margin-top:8px;">KPI目標（7月）</div>
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>指標</th>
+            <th class="center">6月実績（〜19日）</th>
+            <th class="center">7月目標</th>
+            <th>主要施策</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>fun34 CVR</td>
+            <td class="center highlight-negative">1.73%</td>
+            <td class="center">4.0%以上</td>
+            <td>商品ページ全面修正（6/20までに実施）</td>
+          </tr>
+          <tr>
+            <td>fun34 TACOS</td>
+            <td class="center highlight-warn">22.76%</td>
+            <td class="center">12%以下</td>
+            <td>CVR回復後にRPP適正化（増投禁止維持→CVR回復後に増量）</td>
+          </tr>
+          <tr>
+            <td>fun34ss 売上</td>
+            <td class="center highlight-negative">¥0</td>
+            <td class="center">復旧</td>
+            <td>掲載再有効化（6/20前）</td>
+          </tr>
+          <tr>
+            <td>fun33 CVR</td>
+            <td class="center">2.69%</td>
+            <td class="center">3.5%以上</td>
+            <td>RPP入札最適化・ページ品質維持</td>
+          </tr>
+          <tr>
+            <td>bathbomb CTR</td>
+            <td class="center highlight-warn">0.09%</td>
+            <td class="center">0.15%以上</td>
+            <td>サムネイル刷新（7月中に適用）</td>
+          </tr>
+          <tr>
+            <td>シリーズ TACOS</td>
+            <td class="center">8.3%（累計）</td>
+            <td class="center">7%以下</td>
+            <td>fun34 RPP正常化（最大インパクト）</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- ========== SECTION 7 施策効果 ========== -->
+  <div class="section" id="施策">
+    <div class="section-title"><span class="num">7</span>施策効果グラフ（楽天スーパーセール・スーパーSALE）</div>
+
+    <!-- Timeline -->
+    <div class="timeline-wrap">
+      <div style="font-size:13px;font-weight:700;color:var(--primary);margin-bottom:14px;">施策タイムライン</div>
+      <div class="timeline-row">
+        <div class="tl-node">
+          <div class="tl-dot"></div>
+          <div class="tl-date">2026/3/1〜3/3</div>
+          <div class="tl-label">SS前<br>通常運用</div>
+        </div>
+        <div class="tl-line"></div>
+        <div class="tl-node">
+          <div class="tl-dot red"></div>
+          <div class="tl-date">2026/3/4〜3/10</div>
+          <div class="tl-label">🛒 楽天<br>スーパーセール</div>
+        </div>
+        <div class="tl-line"></div>
+        <div class="tl-node">
+          <div class="tl-dot"></div>
+          <div class="tl-date">2026/3/11〜3/17</div>
+          <div class="tl-label">SS後<br>浮揚期</div>
+        </div>
+        <div class="tl-line"></div>
+        <div class="tl-node">
+          <div class="tl-dot"></div>
+          <div class="tl-date">2026/4〜5月</div>
+          <div class="tl-label">通常期<br>（調整・低迷）</div>
+        </div>
+        <div class="tl-line"></div>
+        <div class="tl-node">
+          <div class="tl-dot"></div>
+          <div class="tl-date">2026/6/1〜6/3</div>
+          <div class="tl-label">SS前<br>通常運用</div>
+        </div>
+        <div class="tl-line"></div>
+        <div class="tl-node">
+          <div class="tl-dot red"></div>
+          <div class="tl-date">2026/6/4〜6/10</div>
+          <div class="tl-label">🛒 楽天<br>スーパーSALE</div>
+        </div>
+        <div class="tl-line"></div>
+        <div class="tl-node">
+          <div class="tl-dot"></div>
+          <div class="tl-date">2026/6/11〜6/19</div>
+          <div class="tl-label">SS後<br>回復維持中</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Chart -->
+    <div class="chart-wrap">
+      <h3>fun33 日次売上平均（期間別）— セール効果の可視化</h3>
+      <div style="position:relative;height:300px;">
+        <canvas id="施策Chart"></canvas>
+      </div>
+      <div class="note" style="margin-top:8px;">※ 赤バー＝セール期間中。4〜5月は月次日割り平均値。fun33（バスボムドーナツ）代表値。</div>
+    </div>
+
+    <!-- Before/After 3月SS -->
+    <div class="section-subtitle">施策1：3月楽天スーパーセール（3/4〜3/10）— fun33 代表</div>
+    <div class="ba-grid">
+      <div class="ba-card">
+        <h4>売上（/日）</h4>
+        <div class="ba-row"><span class="ba-label">施策前（3/1〜3/3）</span><span class="ba-val">¥6,553</span></div>
+        <div class="ba-row"><span class="ba-label">施策中（3/4〜3/10）</span><span class="ba-val">¥51,686</span></div>
+        <div class="ba-row"><span class="ba-label">施策後（3/11〜3/17）</span><span class="ba-val">¥30,734</span></div>
+        <div class="ba-row"><span class="ba-label">変動率（前→中）</span><span class="ba-val change-positive">+688%</span></div>
+      </div>
+      <div class="ba-card">
+        <h4>販売数（/日）</h4>
+        <div class="ba-row"><span class="ba-label">施策前（3/1〜3/3）</span><span class="ba-val">2.3個</span></div>
+        <div class="ba-row"><span class="ba-label">施策中（3/4〜3/10）</span><span class="ba-val">19.3個</span></div>
+        <div class="ba-row"><span class="ba-label">施策後（3/11〜3/17）</span><span class="ba-val">10.4個</span></div>
+        <div class="ba-row"><span class="ba-label">変動率（前→中）</span><span class="ba-val change-positive">+739%</span></div>
+      </div>
+      <div class="ba-card" style="border-top-color: var(--positive);">
+        <h4>効果評価</h4>
+        <div class="ba-row"><span class="ba-label">売上倍率</span><span class="ba-val change-positive">約7.9倍</span></div>
+        <div class="ba-row"><span class="ba-label">販売数倍率</span><span class="ba-val change-positive">約8.4倍</span></div>
+        <div class="ba-row"><span class="ba-label">SS後の水準維持</span><span class="ba-val">前比 +4.7倍維持</span></div>
+        <div class="ba-row"><span class="ba-label">判定</span><span class="ba-val change-positive">SS後もSEO浮揚効果あり</span></div>
+      </div>
+    </div>
+
+    <!-- Before/After 6月SS -->
+    <div class="section-subtitle" style="margin-top:24px;">施策2：6月楽天スーパーSALE（6/4〜6/10）— fun33 代表</div>
+    <div class="ba-grid">
+      <div class="ba-card">
+        <h4>売上（/日）</h4>
+        <div class="ba-row"><span class="ba-label">施策前（6/1〜6/3）</span><span class="ba-val">¥2,880</span></div>
+        <div class="ba-row"><span class="ba-label">施策中（6/4〜6/10）</span><span class="ba-val">¥17,740</span></div>
+        <div class="ba-row"><span class="ba-label">施策後（6/11〜6/19）</span><span class="ba-val">¥10,093</span></div>
+        <div class="ba-row"><span class="ba-label">変動率（前→中）</span><span class="ba-val change-positive">+516%</span></div>
+      </div>
+      <div class="ba-card">
+        <h4>3月SS比較</h4>
+        <div class="ba-row"><span class="ba-label">3月SS中 売上/日</span><span class="ba-val">¥51,686</span></div>
+        <div class="ba-row"><span class="ba-label">6月SS中 売上/日</span><span class="ba-val">¥17,740</span></div>
+        <div class="ba-row"><span class="ba-label">絶対額差</span><span class="ba-val change-negative">▼65.7%</span></div>
+        <div class="ba-row"><span class="ba-label">倍率差</span><span class="ba-val change-negative">+688%→+516%</span></div>
+      </div>
+      <div class="ba-card" style="border-top-color: var(--warn);">
+        <h4>効果評価・考察</h4>
+        <div class="ba-row"><span class="ba-label">fun33単体</span><span class="ba-val change-positive">回復基調（+516%）</span></div>
+        <div class="ba-row"><span class="ba-label">fun34 CVR崩壊</span><span class="ba-val change-negative">シリーズ全体を押下</span></div>
+        <div class="ba-row"><span class="ba-label">SS後の維持</span><span class="ba-val">¥10,093/日（継続中）</span></div>
+        <div class="ba-row"><span class="ba-label">判定</span><span class="ba-val change-neutral">fun33回復・fun34要修正</span></div>
+      </div>
+    </div>
+
+    <div class="callout" style="margin-top:16px;">
+      <strong>施策まとめ：</strong>楽天スーパーセール（3月・6月）はいずれもfun33で5〜7倍超の売上倍率を実現し、SS後も浮揚効果が7〜14日間継続した。fun34はCVR崩壊（3月→6月で▼67.5%）により6月SSの恩恵を十分に受けられなかった。<strong>次のビッグイベント（9月スーパーセール）までにfun34 CVRを4%以上に回復させることが最優先課題。</strong>
+    </div>
+  </div>
+
+</div><!-- /main -->
+
+<div class="footer">
+  fungoo｜バスボムシリーズ（bathbomb / fun33 / fun34）分析レポート｜楽天市場 2026年3〜6月実績｜作成日 2026年6月19日
+</div>
+
+<script>
+  const ctx = document.getElementById('施策Chart').getContext('2d');
+  new Chart(ctx, {
+    type: 'bar',
+    data: {
+      labels: [
+        '3/1-3/3\n(SS前)',
+        '3/4-3/10\n(スーパーSS)',
+        '3/11-3/17\n(SS後)',
+        '4月\n(日割平均)',
+        '5月\n(日割平均)',
+        '6/1-6/3\n(SS前)',
+        '6/4-6/10\n(スーパーSS)',
+        '6/11-6/19\n(SS後)'
+      ],
+      datasets: [{
+        label: 'fun33 日次売上平均（円）',
+        data: [6553, 51686, 30734, 5267, 4516, 2880, 17740, 10093],
+        backgroundColor: [
+          'rgba(180,180,200,0.7)',
+          'rgba(191,0,0,0.85)',
+          'rgba(191,0,0,0.45)',
+          'rgba(180,180,200,0.5)',
+          'rgba(180,180,200,0.5)',
+          'rgba(180,180,200,0.7)',
+          'rgba(191,0,0,0.85)',
+          'rgba(191,0,0,0.45)'
+        ],
+        borderColor: 'transparent',
+        borderRadius: 6
+      }]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: {
+        legend: { display: false },
+        tooltip: {
+          callbacks: {
+            label: function(ctx) {
+              return '¥' + ctx.raw.toLocaleString() + ' /日';
+            }
+          }
+        }
+      },
+      scales: {
+        y: {
+          beginAtZero: true,
+          ticks: {
+            callback: function(v) {
+              return '¥' + v.toLocaleString();
+            }
+          },
+          grid: { color: 'rgba(0,0,0,0.05)' }
+        },
+        x: {
+          ticks: { font: { size: 11 } },
+          grid: { display: false }
+        }
+      }
+    }
+  });
+</script>
+
+</body>
+</html>
