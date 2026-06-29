@@ -16,3 +16,12 @@ __pycache__/
 # エディタ
 .vscode/
 *.swp
+
+# Node.js
+node_modules/
+
+# 一時出力（公開前の作業ファイル）
+outputs/
+
+# macOS
+.DS_Store
